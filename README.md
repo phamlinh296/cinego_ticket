@@ -40,7 +40,7 @@ Trong đó, tôi phụ trách phần Back-end
 # **5. Mô hình hoạt động:**
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**A. Mô hình Database:**
 <div align='center'>
-	<img src='https://drive.google.com/file/d/1P35kfDFb8tCPfeIOVAk1MtyXCg8RTsY_/view?usp=sharing' />
+	<img src='images/cine_database.png' />
 </div>
 <br/>
 
