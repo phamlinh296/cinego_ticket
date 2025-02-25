@@ -64,7 +64,7 @@ Trong đó, tôi phụ trách phần Back-end
 # **7. Bảo mật:**
 ### Sử dụng JWT (JSON Web Token) để phân quyền truy cập và xác thực user.
 ### Cấu trúc của token:
-#### &nbsp;&nbsp;1. Thuật toán sử dụng: `HS512` với key có kích thước `32 bit`
+#### &nbsp;&nbsp;1. Thuật toán sử dụng: `HS512` với key có kích thước `256 bit`
 #### &nbsp;&nbsp;2. Loại data có trong token bao gồm:
 - `scope` : Dùng để phân quyền người dùng, bao gồm `ADMIN`, `USER` 
 - `sub` : Chứa username của người dùng.
