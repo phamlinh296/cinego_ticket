@@ -38,7 +38,7 @@ Trong đó, tôi phụ trách phần Back-end
 
 
 # **5. Mô hình hoạt động:**
-### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**A. Mô hình Database:**
+### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Mô hình Database:**
 <div align='center'>
 	<img src='images/cine_database.png' />
 </div>
