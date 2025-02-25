@@ -22,9 +22,7 @@ Trong đó, tôi phụ trách phần Back-end
 	- HTML
 	- CSS
 	- JS
-
 <br/><br/>
-
 
 # **4. Thông tin:**
 ### **A. Các Website:**
@@ -47,18 +45,19 @@ Trong đó, tôi phụ trách phần Back-end
 # **6. Chức năng của trang web:**
 ### **A. Chức năng của User:**
 - Đăng ký
-	+ Xác thực tài khoản qua email
 - Đăng nhập
 - Đăng xuất
-- Tìm kiếm phim theo từ khóa, thể loại
+- Tìm kiếm phim theo tên phim, thể loại
 - Đặ̣t vé:
-	+ Lựa chọn suất chiếu(ngày, giờ, phòng chiếu)
-	+ Chọn chỗ ngồi
+	+ Tạo/hủy booking
+	+ Tạo thanh toán (payment)
 	+ Thanh toán VNPAY (chưa hoàn thiện)
 
 ### **B. Chức năng của Admin:**
 - Quản lý user.
+- Định kỳ check user spam và update danh sách user blacklist.
 - Thêm, xóa, sữa dữ liệu liên quan đến các suất chiếu phim như: phim chiếu, lịch chiếu, phòng chiếu, số lượng ghế và lưu lại thông tin thanh toán.
+- Định kỳ xử lý booking Pending khi quá thời gian chờ.
 <br/><br/>
 
 # **7. Bảo mật:**
