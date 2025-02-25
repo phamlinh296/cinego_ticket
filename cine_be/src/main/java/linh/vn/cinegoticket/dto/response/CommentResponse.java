@@ -6,35 +6,36 @@ import lombok.Getter;
 @Getter
 public class CommentResponse {
 
-    private String comment_id;
+    private String commentId;
     private String username;
     private String comment;
-    private long movie_id;
+    private long movieId;
     private int liked;
     private int disliked;
-    private int rated_starts;
-    private String update_at;
+    private int ratedStarts;
+    private String updateAt;
 
     public CommentResponse() {
-        this.comment_id = "";
+        this.commentId = "";
         this.username = "";
         this.comment = "";
-        this.movie_id = 1L;
+        this.movieId = 1L;
         this.liked = 2;
         this.disliked = 4;
-        this.rated_starts = 9;
-        this.update_at = "";
+        this.ratedStarts = 9;
+        this.updateAt = "";
     }
 
     public CommentResponse(Comment c) {
-        this.comment_id = c.getId();
+        this.commentId = c.getId();
         this.username = c.getUser().getUsername();
         this.comment = c.getComment();
-        this.movie_id = c.getMovie().getId();
+        this.movieId = c.getMovie().getId();
         this.liked = c.getLiked();
         this.disliked = c.getDisliked();
-        this.rated_starts = c.getRated();
-        this.update_at = c.getUpdateAt().toString();
+        this.ratedStarts = c.getRated();
+        this.updateAt = c.getUpdateAt().toString();
     }
+
 
 }

@@ -10,7 +10,7 @@ public class CommentCreateRequest {
 
     @NotNull
     @JsonProperty("movie_id")
-    private long movie_id;
+    private long movieId;
 
     @NotNull
     @NotBlank

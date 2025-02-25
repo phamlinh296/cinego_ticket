@@ -64,14 +64,13 @@ public class SecurityConfig {
         corsConfig.addAllowedOriginPattern("*");
         corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedHeader("*");
-
-        // Nếu API yêu cầu xác thực (JWT, session, cookie), bạn nên dùng danh sách cụ thể thay vì "*"
 //        corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
         return source;
     }
+
 //    @Bean
 //    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
 //        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

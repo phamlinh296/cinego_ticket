@@ -65,11 +65,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    // có vào controller đâu?, hnhu bị để t mô tả đã, hnhu bị fe chỗ token sao ấy,
-    // nma k vào đc controller sao n ném lõi 1002, đấy là lỗi
-    // t định nghĩa trong be 1002 nào,lúc đăng ký, code 10002 là lỗi t định nghĩa
-    // tỏng errorcode, nếu exist thì 1002,
-    // nma t comment nó đi rồi mà khs n vẫn trả ra 1002
     public User createUser(UserCreateRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.EXISTED);

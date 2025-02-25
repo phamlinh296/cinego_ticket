@@ -30,8 +30,7 @@ public class UserController {
     }
 
     @GetMapping("/getall")
-    @PreAuthorize("hasRole('ADMIN')")
-        //ROLE_ADMIN
+    @PreAuthorize("hasRole('ADMIN')") //ROLE_ADMIN
 //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     ApiResponse<List<UserResponse>> getAllUsers() {
         return ApiResponse.<List<UserResponse>>builder()
@@ -46,7 +45,7 @@ public class UserController {
                 .build();
     }
 
-    //update user theo username (ban đu theo user id ban đầu_
+    //update user theo username
     @PutMapping("/{userName}")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<UserResponse> updateUser(@PathVariable String userName, @RequestBody UserUpdateRequest request) {

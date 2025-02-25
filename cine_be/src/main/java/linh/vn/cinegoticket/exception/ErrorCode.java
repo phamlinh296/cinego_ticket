@@ -11,7 +11,7 @@ public enum ErrorCode {
     NOT_EXISTED(1000, "Not found. User does not exist", HttpStatus.NOT_FOUND),//ko tìm thấy = not found =404
     USERNAME_INVALID(1003, "Username must be at least {min} characters", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(1004, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
-    INVALID_KEY(1001, "lỗi ko nằm trong enum errorcode đã kbao", HttpStatus.BAD_REQUEST),//kiểu hằng này k nằm trong enum đã kbao
+    INVALID_KEY(1001, "lỗi không nằm trong enum errorcode đã khai bao", HttpStatus.BAD_REQUEST),//kiểu hằng này k nằm trong enum đã kbao
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),//pas đăng nhập ko khớp - k đăng nhập đc =401
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),//lỗi user không có quyền truy cap
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),

@@ -90,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
         String username = authentication.getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.NOT_EXISTED));
 
-        Movie movie = movieRepository.findById(req.getMovie_id()).orElseThrow(() -> new AppException(ErrorCode.NOT_EXISTED));
+        Movie movie = movieRepository.findById(req.getMovieId()).orElseThrow(() -> new AppException(ErrorCode.NOT_EXISTED));
 
         //đk trc khi tạo comment: phải mua vé rồi và chưa review
 //        Optional<Booking> booking = bookingRepository.findByUserIdAndMovieIdAndStatus(user.getId(), movie.getId(), BookingStatus.BOOKED);

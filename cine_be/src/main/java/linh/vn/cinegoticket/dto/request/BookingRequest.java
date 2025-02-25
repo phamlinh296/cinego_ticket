@@ -8,20 +8,20 @@ import java.util.List;
 
 public class BookingRequest {
 
-    @JsonProperty(value = "seat_ids")
+    @JsonProperty(value = "seats_id")
     @NotNull
-    List<String> seat_ids;
+    List<String> seatsId;
 
     @JsonProperty(value = "show_id")
     @NotNull
     @NotBlank
-    String show_id;
+    String showId;
 
     public List<String> getSeatsId() {
-        return this.seat_ids;
+        return this.seatsId;
     }
 
     public String getShowId() {
-        return this.show_id;
+        return this.showId;
     }
 }

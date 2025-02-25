@@ -21,7 +21,6 @@ public class GenreController {
     @Autowired
     private GenreReposity gReposity;
 
-    //	Lấy danh sách tất cả các thể loại phim.
     @GetMapping("/getall")
     public ResponseEntity<List<Genre>> getGenre() {
         return new ResponseEntity<List<Genre>>(gService.getGenres(), HttpStatus.OK);

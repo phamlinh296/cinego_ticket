@@ -132,6 +132,24 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!--  chuyển đổi giữa Java Object ↔ JSON-->
+                <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </dependency>
+
+                <!--dùng redis-->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-redis</artifactId>
+                </dependency>
+
+                <!-- dùng cachable tự dong (neu chi dung RedisTemplate thì k can)-->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-cache</artifactId>
+                </dependency>
+
     </dependencies>
 
     <build>

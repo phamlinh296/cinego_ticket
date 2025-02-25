@@ -2,6 +2,7 @@ package linh.vn.cinegoticket.dto.response;
 
 import linh.vn.cinegoticket.entity.Booking;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TicketDetail {
@@ -18,6 +19,14 @@ public class TicketDetail {
         this.startTime = booking.getShow().getStartTime().toString();
     }
 
+    // Constructor mặc định để tránh null
+    public TicketDetail() {
+        this.movieName = "N/A";
+        this.hallName = "N/A";
+        this.startTime = "N/A";
+        this.seats = new ArrayList<>();
+    }
+
     public String getMovieName() {
         return this.movieName;
     }
@@ -32,5 +41,15 @@ public class TicketDetail {
 
     public String getStartTime() {
         return this.startTime;
+    }
+
+    @Override
+    public String toString() {
+        return "TicketDetail{" +
+                "movieName='" + movieName + '\'' +
+                ", hallName='" + hallName + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", seats=" + seats +
+                '}';
     }
 }

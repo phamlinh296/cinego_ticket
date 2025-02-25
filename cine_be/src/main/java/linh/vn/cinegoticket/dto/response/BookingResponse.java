@@ -16,7 +16,7 @@ public class BookingResponse {
     private String movieName;
     private String hallName;
     private String startTime;
-    private String create_at;
+    private String createAt;
     private String status;
 
     public BookingResponse(Booking booking) {
@@ -28,7 +28,7 @@ public class BookingResponse {
         this.movieName = booking.getShow().getMovie().getTitle();
         this.hallName = booking.getShow().getCinemaHall().getName();
         this.startTime = booking.getShow().getStartTime().toString();
-        this.create_at = booking.getShow().getCreateAt().toString();
+        this.createAt = booking.getShow().getCreateAt().toString();
         this.status = booking.getStatus().name();
     }
 

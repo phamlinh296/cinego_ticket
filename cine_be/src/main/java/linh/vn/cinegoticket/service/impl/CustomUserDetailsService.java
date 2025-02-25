@@ -10,16 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.stream.Collectors;
 
-//@Service //xóa service đi, mình dùng Bean trong secuconfig
 public class CustomUserDetailsService implements UserDetailsService {
-//    private final UserService userService;
-//
-//    //custom lại UserDetailsService
-//    public CustomUserDetailsService(UserService userService) {
-//
-//        this.userService = userService;
-//    }
-
     @Autowired
     private UserRepository userRepository;
 

@@ -73,4 +73,5 @@ public class CinemaHallController {
                                     @RequestBody SeatEditRequest cReq) {
         return ResponseEntity.ok().body(cinemaSeatService.Edit(hall_id, cReq));
     }
+
 }

@@ -166,10 +166,10 @@ public class PaymentServiceImpl implements PaymentService {
             String info = "Payment ID " + data.getId() + "\n" +
                     "Total amount: " + data.getPrice() + "\n" +
                     "Create at: " + data.getCreateOn() + "\n" +
-                    "Movie name: " + data.getDetai().getMovieName() + "\n" +
-                    "Hall name: " + data.getDetai().getHallName() + "\n" +
-                    "Start time: " + data.getDetai().getStartTime() + "\n" +
-                    "Seats: " + String.join(", ", data.getDetai().getSeats());
+                    "Movie name: " + data.getDetail().getMovieName() + "\n" +
+                    "Hall name: " + data.getDetail().getHallName() + "\n" +
+                    "Start time: " + data.getDetail().getStartTime() + "\n" +
+                    "Seats: " + String.join(", ", data.getDetail().getSeats());
             String subject = "Movie Project: Payment infomation";
             emailService.sendMail(data.getEmail(), subject, info);
         }

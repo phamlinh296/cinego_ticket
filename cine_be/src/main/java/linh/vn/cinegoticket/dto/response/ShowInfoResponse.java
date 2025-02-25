@@ -12,7 +12,7 @@ public class ShowInfoResponse {
     private String movieId;
     private String startTime;
     private String endTime;
-    private int total_seats;
+    private int totalSeats;
     private int totalReservedSeats;
     private int totalAvailableSeats;
 
@@ -24,8 +24,9 @@ public class ShowInfoResponse {
         this.movieId = show.getMovie().getId().toString();
         this.startTime = show.getStartTime().toString();
         this.endTime = show.getEndTime().toString();
-        this.total_seats = show.getCinemaHall().getCapacity();
+        this.totalSeats = show.getCinemaHall().getCapacity();
         this.totalReservedSeats = total_reserved_seats;
         this.totalAvailableSeats = total_available_seats;
     }
+
 }

@@ -21,7 +21,7 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    //GET
+    //Get
     @GetMapping("/{comment_id}")
     @PreAuthorize("hasRole('USER')")
     public CommentResponse _getComment(Principal principal, @PathVariable(value = "comment_id") String comment_id) {
@@ -29,7 +29,7 @@ public class CommentController {
     }
 
     @GetMapping("/movie/{movie_id}")
-    //@PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     public List<CommentResponse> _getAllCommentsFromMovie(@PathVariable(value = "movie_id") long movie_id) {
         return commentService.getAllCommentsFromMovieId(movie_id);
     }

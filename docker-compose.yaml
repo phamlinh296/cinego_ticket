@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: linh_db
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'laptop2'
+      MYSQL_USER: 'username'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password-admin'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./my-db:/var/lib/mysql
+    networks:
+      - cine-network
+
+  redis:
+    container_name: redis-container
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    networks:
+      - cine-network
+
+  be-service:
+    container_name: cinego-be-container
+    build: ./cine_be
+    restart: always
+    environment:
+      DATABASE_URL: jdbc:mysql://linh_db:3306/laptop2
+      DATABASE_USERNAME: username
+      DATABASE_PASSWORD: password
+      SERVER_PORT: 9595
+      REDIS_HOST: redis-container
+    ports:
+      - '9595:9595'
+    depends_on:
+      - db
+      - redis
+    networks:
+      - cine-network
+
+  fe-service:
+    container_name: cinego-fe-container
+    restart: unless-stopped
+    build: ./cine-fe
+    ports:
+      - '180:80'
+    networks:
+      - cine_network
+
+networks:
+  cine-network:
+    driver: bridge

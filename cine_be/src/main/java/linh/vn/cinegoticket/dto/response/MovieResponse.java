@@ -20,7 +20,7 @@ public class MovieResponse {
     private String releaseDate;
     private String country;
     private String image;
-    private String large_image;
+    private String largeImage;
     private String trailer;
     private String actors;
     private List<Genre> genres;
@@ -36,7 +36,7 @@ public class MovieResponse {
         this.trailer = m.getTrailer();
         this.actors = m.getActors();
         this.image = m.getImage();
-        this.large_image = m.getLargeImage();
+        this.largeImage = m.getLargeImage();
         this.genres = m.getGenres();
         this.durationInMins = m.getDurationInMins();
         this.comments = this.convertType(m.getComments());
@@ -46,7 +46,7 @@ public class MovieResponse {
         this.id = id;
         this.title = title;
         this.image = image;
-        this.large_image = large_image;
+        this.largeImage = large_image;
         this.genres = genre;
         this.durationInMins = durationInMins;
         this.comments = this.convertType(comment);
@@ -62,5 +62,6 @@ public class MovieResponse {
             data.add(new CommentResponse(c));
         return data;
     }
+
 
 }

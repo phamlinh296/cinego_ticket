@@ -1,7 +1,9 @@
 package linh.vn.cinegoticket.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import linh.vn.cinegoticket.entity.Payment;
 
+@JsonInclude(JsonInclude.Include.NON_NULL) // Bỏ qua null khi serialize
 public class PaymentResponse {
 
     private String id;
@@ -9,6 +11,8 @@ public class PaymentResponse {
     private double price;
     private String createOn;
     private String status;
+
+
     private TicketDetail detail;
     private String paymentUrl;
 
@@ -19,6 +23,18 @@ public class PaymentResponse {
         this.createOn = payment.getCreateAt().toString();
         this.status = payment.getStatus().name();
         this.detail = new TicketDetail(payment.getBooking());
+        // Nếu payment.getBooking() null, tránh lỗi
+        System.out.println("check booking trong payres=" + payment.getBooking());
+        if (payment.getBooking() != null) {
+            this.detail = new TicketDetail(payment.getBooking());
+        } else {
+            this.detail = new TicketDetail(); // Tránh null
+        }
+    }
+
+    // Thêm constructor mặc định (Jackson cần khi deserialize)
+    public PaymentResponse() {
+        this.detail = new TicketDetail(); // Đảm bảo không bao giờ null
     }
 
     public void setPaymentUrl(String paymentUrl) {
@@ -45,11 +61,25 @@ public class PaymentResponse {
         return this.status;
     }
 
-    public TicketDetail getDetai() {
+    public TicketDetail getDetail() {
         return this.detail;
     }
 
     public String getPaymentUrl() {
         return this.paymentUrl;
     }
+
+    @Override
+    public String toString() {
+        return "PaymentResponse{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", price=" + price +
+                ", createOn='" + createOn + '\'' +
+                ", status='" + status + '\'' +
+                ", detail=" + detail +
+                ", paymentUrl='" + paymentUrl + '\'' +
+                '}';
+    }
 }
+
