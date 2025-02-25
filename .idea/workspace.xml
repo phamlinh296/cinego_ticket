@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="" />
+    <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,7 +59,7 @@
     &quot;Spring Boot.CinegoTicketApplication.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/NewVolume/Spring/1.hoidanit/cinego_ticket&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/NewVolume/BE/cinego_ticket&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -172,6 +174,8 @@
       <workItem from="1739940342169" duration="10000" />
       <workItem from="1739940402837" duration="498000" />
       <workItem from="1739941523524" duration="8000" />
+      <workItem from="1739976086099" duration="266000" />
+      <workItem from="1740471899629" duration="4921000" />
     </task>
     <servers />
   </component>
