@@ -59,7 +59,7 @@ Trong đó, tôi phụ trách phần Back-end
 
 # **6. Bảo mật và caching:**
 ### Authentication & Authorization (Sử dụng JWT - JSON Web Token)
-#### &nbsp;&nbsp;1. Thuật toán sử dụng: `HS512` với key có kích thước `32 bit`
+#### &nbsp;&nbsp;1. Thuật toán sử dụng: `HS512` với key có kích thước `32 byte`
 #### &nbsp;&nbsp;2. Loại data có trong token bao gồm:
 - `scope` : Quyền truy cập (ADMIN, USER)
 - `sub` : Username của người dùng.
@@ -67,8 +67,8 @@ Trong đó, tôi phụ trách phần Back-end
 - `exp` : Thời điểm hết hạn của token (sau 1 giờ kể từ lúc tạo)
 - `jti` : ID của token
 ### Hiệu suất & Caching
-🔹 Sử dụng Spring Cache (@Cacheable) để lưu kết quả truy vấn phim, giảm tải cho database.
-🔹 Tích hợp Redis Pub/Sub để xử lý bất đồng bộ email thông báo khi người dùng thanh toán thành công.
+- Sử dụng Spring Cache (@Cacheable) để lưu kết quả truy vấn phim, giảm tải cho database.
+- Tích hợp Redis Pub/Sub để xử lý bất đồng bộ email thông báo khi người dùng thanh toán thành công.
 <br/>
 
 # **7. Cách chạy dự án:**
