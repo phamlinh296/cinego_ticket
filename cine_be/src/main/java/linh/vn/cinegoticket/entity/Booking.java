@@ -15,7 +15,12 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "Booking")
+@Table(name = "Booking",
+        indexes = {
+                @Index(name = "idx_booking_status", columnList = "status"),
+                @Index(name = "idx_booking_userid", columnList = "user_id"),
+                @Index(name = "idx_bookingid_userid", columnList = "id, user_id")//tên cot trong db, kp ten trường
+        })
 public class Booking {
 
     @Id

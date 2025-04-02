@@ -14,8 +14,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "Movie",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "id"})
-        })
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "id"})},
+        indexes = {
+                @Index(name = "idx_movie_title", columnList = "title"),
+                @Index(name = "idx_movie_genre", columnList = "genre")
+})
 @Getter
 @Setter
 public class Movie {
