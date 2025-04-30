@@ -17,7 +17,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
             "/api/user/**", "/api/auth/**", "/api/movie/**", "/api/show/**", "/api/hall/**",
-            "/api/payment/**", "/api/booking/**", "/api/genre/**"
+            "/api/payment/**", "/api/booking/**", "/api/genre/**",
+            // CÁC ĐƯỜNG DẪN SAU CHO SWAGGER
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
     };
 
     @Autowired

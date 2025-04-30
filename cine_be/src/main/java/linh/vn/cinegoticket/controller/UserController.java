@@ -1,5 +1,8 @@
 package linh.vn.cinegoticket.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import linh.vn.cinegoticket.dto.request.UserUpdateRequest;
 import linh.vn.cinegoticket.dto.response.ApiResponse;
 import linh.vn.cinegoticket.dto.response.UserResponse;
@@ -17,18 +20,22 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/user")
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Tag(name="1. User Endpoint")
 public class UserController {
     @Autowired
     private UserService userService;
 
     //get user by username
     @GetMapping("/{username}")
+    @Operation(summary = "Lấy thông tin người dùng theo username")
+    @Parameter(name = "username", description = "Tên đăng nhập của người dùng")
     ApiResponse<UserResponse> getUser(@PathVariable("username") String username) {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.getUser(username))
                 .build();
     }
 
+    @Operation(summary = "Lấy danh sách tất cả người dùng (chỉ ADMIN)")
     @GetMapping("/getall")
     @PreAuthorize("hasRole('ADMIN')") //ROLE_ADMIN
 //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -38,6 +45,7 @@ public class UserController {
                 .build();
     }
 
+    @Operation(summary = "Lấy thông tin cá nhân của người dùng hiện tại (đã đăng nhập)")
     @GetMapping("/myInfo")
     ApiResponse<UserResponse> getMyInfo() {
         return ApiResponse.<UserResponse>builder()
@@ -46,6 +54,11 @@ public class UserController {
     }
 
     //update user theo username
+    @Operation(summary = "Cập nhật thông tin người dùng theo username (chỉ ADMIN)")//mô tả tổng quan mỗi API
+    @Parameter(name = "userName", description = "Tên đăng nhập của người dùng cần cập nhật")//mô tả tham số
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(//mô tả dữ liệu đầu vào
+            description = "Thông tin cập nhật cho người dùng"
+    )
     @PutMapping("/{userName}")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<UserResponse> updateUser(@PathVariable String userName, @RequestBody UserUpdateRequest request) {
@@ -56,6 +69,8 @@ public class UserController {
     }
 
     //delete user
+    @Operation(summary = "Xóa người dùng theo username (chỉ ADMIN)")
+    @Parameter(name = "username", description = "Tên đăng nhập của người dùng cần xóa")
     @DeleteMapping("/{username}")
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
