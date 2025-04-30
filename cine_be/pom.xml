@@ -166,6 +166,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.3.4</version> <!-- Nên ghi rõ version để tránh lỗi -->
+            <!--chi dinh Mainclass de deploy tren render, vi docker can, chay local k bị loi này-->
+                    <configuration>
+                        <mainClass>linh.vn.cinegoticket.CinegoTicketApplication</mainClass>
+                    </configuration>
             </plugin>
 
             <!-- Maven Compiler Plugin -->
