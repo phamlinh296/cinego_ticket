@@ -31,7 +31,7 @@ WORKDIR /app
 ENV DATABASE_URL=jdbc:mysql://linh_db:3306/laptop2
 ENV DATABASE_USERNAME=username
 ENV DATABASE_PASSWORD=password
-ENV SERVER_PORT=9595
+ENV PORT=9595
 
 ENV REDIS_HOST=redis-container
 
@@ -49,5 +49,5 @@ EXPOSE 9595
 
 # Chạy ứng dụng
 #ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar cine-app.jar"]
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar cine-app.jar --server.port=${SERVER_PORT}"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar cine-app.jar --server.port=${PORT}"]
 
