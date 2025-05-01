@@ -32,7 +32,7 @@ import java.util.Queue;
 @Service
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
-    final private int SEND_MAIL_SCHEDULE = 1000;
+    final private int SEND_MAIL_SCHEDULE = 30000;
     Queue<PaymentResponse> sendEmail = new LinkedList<>();
     @Autowired
     private BookingRepository bookingRepository;
@@ -161,6 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Scheduled(fixedDelay = SEND_MAIL_SCHEDULE)
     private void sendPaymentViaMail() {
+        log.info("SEND_MAIL_SCHEDULE...");
         while (this.sendEmail.size() != 0) {
             PaymentResponse data = this.sendEmail.poll();
             String info = "Payment ID " + data.getId() + "\n" +
