@@ -16,8 +16,7 @@ import java.util.List;
 @Table(name = "Movie",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"title", "id"})},
         indexes = {
-                @Index(name = "idx_movie_title", columnList = "title"),
-                @Index(name = "idx_movie_genre", columnList = "genre")
+                @Index(name = "idx_movie_title", columnList = "title")
 })
 @Getter
 @Setter
