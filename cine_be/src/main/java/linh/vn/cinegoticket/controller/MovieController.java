@@ -1,6 +1,7 @@
 package linh.vn.cinegoticket.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import linh.vn.cinegoticket.dto.response.ApiResponse;
 import linh.vn.cinegoticket.dto.response.MovieResponse;
 import linh.vn.cinegoticket.entity.Movie;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.web.servlet.function.ServerResponse.badRequest;
+
 @RestController
 @RequestMapping("/api/movie")
 public class MovieController {
@@ -20,8 +23,11 @@ public class MovieController {
     private MovieService mService;
 
     @GetMapping("/getall")
-    public ResponseEntity<List<MovieResponse>> getMovies(@RequestParam(defaultValue = "0") Integer pageNumber,
-                                                         @RequestParam(defaultValue = "100000") @Valid Integer pageSize) {
+    public ResponseEntity<List<MovieResponse>> getMovies(@RequestParam(defaultValue = "0") @Min(0) Integer pageNumber,
+                                                         @RequestParam(defaultValue = "100000") @Min(1) Integer pageSize) {
+        if (pageSize < 1) {
+            return ResponseEntity.badRequest().build(); // Trả về BadRequest mà không có thông báo lỗi chi tiết
+        }
         return new ResponseEntity<List<MovieResponse>>(mService.getMovies(pageNumber, pageSize), HttpStatus.OK);
     }
 

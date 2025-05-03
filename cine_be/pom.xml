@@ -126,22 +126,22 @@
         </dependency>
 
         <!--  chuyển đổi giữa Java Object ↔ JSON-->
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 
-                <!--dùng redis-->
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-data-redis</artifactId>
-                </dependency>
+        <!--dùng redis-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 
-                <!-- dùng cachable tự dong (neu chi dung RedisTemplate thì k can)-->
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-cache</artifactId>
-                </dependency>
+        <!-- dùng cachable tự dong (neu chi dung RedisTemplate thì k can)-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
 
         <!--Swagger -->
         <dependency>
@@ -150,6 +150,30 @@
           <version>2.1.0</version>
         </dependency>
 
+        <!--unit Test-->
+        <!-- JUnit 5 -->
+        <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter</artifactId>
+          <version>5.9.3</version>
+          <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito -->
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <version>5.2.0</version>
+          <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito + JUnit5 Integration -->
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-junit-jupiter</artifactId>
+          <version>5.2.0</version>
+          <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

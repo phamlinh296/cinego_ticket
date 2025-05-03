@@ -2,10 +2,12 @@ package linh.vn.cinegoticket.dto.response;
 
 import linh.vn.cinegoticket.entity.Booking;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Getter
+@Setter
 public class BookingResponse {
 
     private String id;
@@ -19,6 +21,7 @@ public class BookingResponse {
     private String createAt;
     private String status;
 
+    public BookingResponse() {}
     public BookingResponse(Booking booking) {
         this.id = booking.getId();
         this.showId = booking.getShow().getId().toString();

@@ -26,6 +26,7 @@ public class MovieResponse {
     private List<Genre> genres;
     private List<CommentResponse> comments;
 
+    public MovieResponse() {}
     public MovieResponse(Movie m) {
         this.id = m.getId();
         this.title = m.getTitle();
