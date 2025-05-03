@@ -32,3 +32,4 @@ jobs:
 
       - name: Run Unit Tests with Maven Wrapper
         run: ./mvnw test
+        working-directory: ./cine-be
