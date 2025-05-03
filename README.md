@@ -74,24 +74,24 @@ http://localhost:9595
 - Automatically cancel expired "Pending" bookings
 <br/><br/>
 
-# **6. Unit Testing**
-a. Implemented using JUnit 5 and Mockito
+# **7. Unit Testing**
+Implemented using JUnit 5 and Mockito
 Run tests with:
 ```bash
 ./mvnw test
 ```
 
-# **7. CI/CD
-GitHub Actions: runs tests + auto-deploys on main push
-Render: hosts back-end with automatic deploys
+# **8. CI/CD
+- GitHub Actions: runs tests + auto-deploys on main push
+- Render: hosts back-end with automatic deploys
 <br/><br/>
 
-# **8. How to Run This Project:**
+# **9. How to Run This Project:**
 a. Prerequisites
-Java 21
-Docker
-MySQL
-Redis
+- Java 21
+- Docker
+- MySQL
+- Redis
 
 b. Run with Docker (recommended)
 ```bash
@@ -100,7 +100,7 @@ cd cinego_ticket
 cp .env.example .env   # Set up DB & Redis config
 docker-compose up
 ```
-c. Manual Run
+c. Manual Run:
 Set your environment variables and run:
 ```bash
 ./mvnw spring-boot:run
