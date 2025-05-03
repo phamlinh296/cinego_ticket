@@ -59,7 +59,7 @@ http://localhost:9595
 - Redis Pub/Sub – sends confirmation emails asynchronously after successful booking
 <br/>
 
-# **5. Key Features:**
+# **6. Key Features:**
 ### **A. For Users:**
 - Register, Login, Logout
 - Search movies by name, genre
@@ -74,20 +74,19 @@ http://localhost:9595
 - Automatically cancel expired "Pending" bookings
 <br/><br/>
 
-## **6. Unit Testing**
+# **6. Unit Testing**
 a. Implemented using JUnit 5 and Mockito
 Run tests with:
 ```bash
 ./mvnw test
 ```
 
-b. CI/CD
+# **7. CI/CD
 GitHub Actions: runs tests + auto-deploys on main push
-
-c. Render: hosts back-end with automatic deploys
+Render: hosts back-end with automatic deploys
 <br/><br/>
 
-# **7. How to Run This Project:**
+# **8. How to Run This Project:**
 a. Prerequisites
 Java 21
 Docker
