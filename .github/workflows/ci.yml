@@ -37,3 +37,9 @@ jobs:
       - name: Run Unit Tests with Maven Wrapper (with logs)
         run: ./mvnw -X -e test
         working-directory: ./cine_be
+        
+      - name: Deploy to Render
+        if: success() && github.ref == 'refs/heads/main'
+        run: curl "$RENDER_DEPLOY_HOOK"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
