@@ -1,5 +1,5 @@
 # **. Cinego Ticketing System:**
-![CI/CD](https://github.com/phamlinh296/cinego_ticket/actions/workflows/deploy.yml/badge.svg)
+![CI/CD](https://github.com/phamlinh296/cinego_ticket/actions/workflows/ci.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-21-blue)
 ![License](https://img.shields.io/github/license/phamlinh296/cinego_ticket)
 # **1. Introduction:**
