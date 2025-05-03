@@ -27,9 +27,12 @@ jobs:
             ~/.m2/repository
             !~/.m2/repository/org/apache/maven/plugins
             !~/.m2/repository/org/codehaus/mojo
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/cine_be/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
-      - name: Run Unit Tests with Maven Wrapper
-        run: ./mvnw test
+      - name: Grant execute permissions for mvnw
+        run: chmod +x ./cine_be/mvnw
+
+      - name: Run Unit Tests with Maven Wrapper (Debug)
+        run: ./cine_be/mvnw -X -e test  # Thêm debug và error flag
         working-directory: ./cine_be
