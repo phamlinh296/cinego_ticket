@@ -1,4 +1,8 @@
-# **1. Cinego Ticketing System:**
+# **. Cinego Ticketing System:**
+![CI/CD](https://github.com/phamlinh296/cinego_ticket/actions/workflows/deploy.yml/badge.svg)
+![Java](https://img.shields.io/badge/Java-21-blue)
+![License](https://img.shields.io/github/license/phamlinh296/cinego_ticket)
+# **1. Introduction:**
 A web-based movie ticket booking system with core features like movie search, seat selection, showtime booking, and (coming soon) online payment.  
 This is a personal learning project. I’m responsible for the **Back-end development**.
 - Back-end Repository: [cine_be](https://github.com/phamlinh296/cinego_ticket/tree/main/cine_be)  
@@ -82,7 +86,6 @@ Run tests with:
 ```
 
 # **8. CI/CD**
-![CI/CD](https://github.com/phamlinh296/cinego_ticket/actions/workflows/deploy.yml/badge.svg)
 - GitHub Actions: runs tests + auto-deploys on main push
 - Render: hosts back-end with automatic deploys
 <br/><br/>
