@@ -1,8 +1,8 @@
-# **. Cinego Ticketing System:**
+# **Cinego Ticketing System**
 ![CI/CD](https://github.com/phamlinh296/cinego_ticket/actions/workflows/ci.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-21-blue)
 ![License](https://img.shields.io/github/license/phamlinh296/cinego_ticket)
-# **1. Introduction:**
+# **1. Introduction**
 A web-based movie ticket booking system with core features like movie search, seat selection, showtime booking, and (coming soon) online payment.  
 This is a personal learning project. I’m responsible for the **Back-end development**.
 - Back-end Repository: [cine_be](https://github.com/phamlinh296/cinego_ticket/tree/main/cine_be)  
@@ -14,7 +14,7 @@ This is a personal learning project. I’m responsible for the **Back-end develo
 </p>
 <br/>
 
-# **2. Tech Stack:**
+# **2. Tech Stack**
 - **Backend: Restful API**
 	- Java 21, Spring Boot 3.3.4
 	- RESTful APIs
@@ -31,7 +31,7 @@ This is a personal learning project. I’m responsible for the **Back-end develo
 	- MySQL
 <br/><br/>
 
-# **3. System Overview:**
+# **3. System Overview**
 ### Front-end Website
 http://localhost:80
 - Displays movies, showtime information
@@ -42,14 +42,14 @@ http://localhost:9595
 - Role-based access control (Admin/User). Provides RESTful APIs
 <br/><br/>
 
-# **4. Operating model:**
+# **4. Operating model**
 ### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Mô hình Database:**
 <div align='center'>
 	<img src='images/cine_database.png' />
 </div>
 <br/>
 
-# **5. Security & Performance:**
+# **5. Security & Performance**
 ### Authentication & Authorization (Sử dụng JWT - JSON Web Token)
 - JWT based using OAuth2 Resource Server
 - HS512 algorithm with 32-byte secret key
@@ -63,8 +63,8 @@ http://localhost:9595
 - Redis Pub/Sub – sends confirmation emails asynchronously after successful booking
 <br/>
 
-# **6. Key Features:**
-### **A. For Users:**
+# **6. Key Features**
+### **A. For Users**
 - Register, Login, Logout
 - Search movies by name, genre
 - Book tickets:
@@ -72,7 +72,7 @@ http://localhost:9595
   - Choose seats
   - Payment with VNPAY
 
-### **B. For Admin:**
+### **B. For Admin**
 - Manage users (blacklist/spam control)
 - Manage movies, schedules, rooms, seat layout
 - Automatically cancel expired "Pending" bookings
@@ -90,7 +90,7 @@ Run tests with:
 - Render: hosts back-end with automatic deploys
 <br/><br/>
 
-# **9. How to Run This Project:**
+# **9. How to Run This Project**
 a. Prerequisites
 - Java 21
 - Docker
