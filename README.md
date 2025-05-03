@@ -81,7 +81,8 @@ Run tests with:
 ./mvnw test
 ```
 
-# **8. CI/CD
+# **8. CI/CD**
+![CI/CD](https://github.com/phamlinh296/cinego_ticket/actions/workflows/deploy.yml/badge.svg)
 - GitHub Actions: runs tests + auto-deploys on main push
 - Render: hosts back-end with automatic deploys
 <br/><br/>
