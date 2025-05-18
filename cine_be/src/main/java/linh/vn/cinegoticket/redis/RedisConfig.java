@@ -1,8 +1,10 @@
 package linh.vn.cinegoticket.redis;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -44,6 +46,31 @@ public class RedisConfig {
                         .entryTtl(ttl) // Set TTL cho cache
                         .serializeValuesWith(serializer))
                 .build();
+    }
+
+    //Nếu Redis ngắt, các method @Cacheable, @CachePut, @CacheEvict sẽ không crash, mà bỏ qua cache,
+    //tự động fallback về truy vấn thật (DB).
+    //Chỉ cần config CacheErrorHandler ghi log, không cần viết truy vấn về db thủ công, Spring đã lo
+    @Bean
+    public CacheErrorHandler cacheErrorHandler() {
+        return new CacheErrorHandler() {
+            @Override
+            public void handleCacheGetError(RuntimeException e, Cache cache, Object key) {
+                log.warn("Cache GET error for key {}: {}", key, e.getMessage());
+            }
+            @Override
+            public void handleCachePutError(RuntimeException e, Cache cache, Object key, Object value) {
+                log.warn("Cache PUT error for key {}: {}", key, e.getMessage());
+            }
+            @Override
+            public void handleCacheEvictError(RuntimeException e, Cache cache, Object key) {
+                log.warn("Cache EVICT error for key {}: {}", key, e.getMessage());
+            }
+            @Override
+            public void handleCacheClearError(RuntimeException e, Cache cache) {
+                log.warn("Cache CLEAR error: {}", e.getMessage());
+            }
+        };
     }
 
     //PUB- SUB

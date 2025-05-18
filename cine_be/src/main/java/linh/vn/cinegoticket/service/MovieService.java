@@ -28,5 +28,8 @@ public interface MovieService {
 
     ApiResponse deleteMovie(Long id);
 
+    //xóa cache
+    void evictAllCache();
 
+    void evictAllMoviesCache();
 }

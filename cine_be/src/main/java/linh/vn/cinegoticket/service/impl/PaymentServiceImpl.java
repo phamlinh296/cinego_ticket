@@ -11,6 +11,7 @@ import linh.vn.cinegoticket.enums.BookingStatus;
 import linh.vn.cinegoticket.enums.PaymentStatus;
 import linh.vn.cinegoticket.exception.AppException;
 import linh.vn.cinegoticket.exception.ErrorCode;
+import linh.vn.cinegoticket.redis.RedisPublisher;
 import linh.vn.cinegoticket.repository.BookingRepository;
 import linh.vn.cinegoticket.repository.PaymentRepository;
 import linh.vn.cinegoticket.repository.ShowSeatRepository;
@@ -32,8 +33,10 @@ import java.util.Queue;
 @Service
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
-    final private int SEND_MAIL_SCHEDULE = 30000;
-    Queue<PaymentResponse> sendEmail = new LinkedList<>();
+//    final private int SEND_MAIL_SCHEDULE = 30000;
+//    Queue<PaymentResponse> sendEmail = new LinkedList<>();
+    @Autowired
+    private RedisPublisher redisPublisher;
     @Autowired
     private BookingRepository bookingRepository;
     @Autowired
@@ -155,24 +158,34 @@ public class PaymentServiceImpl implements PaymentService {
     //thêm một đối tượng PaymentResponse vào hàng đợi sendEmail.
     @Override
     public void addPaymentMail(Payment payment) {
-        PaymentResponse response = new PaymentResponse(payment);
-        this.sendEmail.offer(response);
-    }
-
-    @Scheduled(fixedDelay = SEND_MAIL_SCHEDULE)
-    private void sendPaymentViaMail() {
-        log.info("SEND_MAIL_SCHEDULE...");
-        while (this.sendEmail.size() != 0) {
-            PaymentResponse data = this.sendEmail.poll();
-            String info = "Payment ID " + data.getId() + "\n" +
-                    "Total amount: " + data.getPrice() + "\n" +
-                    "Create at: " + data.getCreateOn() + "\n" +
-                    "Movie name: " + data.getDetail().getMovieName() + "\n" +
-                    "Hall name: " + data.getDetail().getHallName() + "\n" +
-                    "Start time: " + data.getDetail().getStartTime() + "\n" +
-                    "Seats: " + String.join(", ", data.getDetail().getSeats());
-            String subject = "Movie Project: Payment infomation";
-            emailService.sendMail(data.getEmail(), subject, info);
+        if (payment.getStatus() == PaymentStatus.PAID) {
+            PaymentResponse response = new PaymentResponse(payment);
+            System.out.println("PaymentService 🔥 Calling RedisPublisher.sendMessage() with PaymentResponse= " + response);
+//        this.sendEmail.offer(response);//k cho vào queue nữa, vì dùng redis
+            redisPublisher.sendMessage(response);
+        } else {
+            System.out.println("PaymentService ❌ Payment status is NOT PAID, skipping RedisPublisher");
         }
     }
+    // Nếu không thấy log "🔥 Calling RedisPublisher.sendMessage()", nghĩa là addPaymentMail() không được gọi
+    // hoặc payment không có status PAID.
+
+
+    //k lập lịch nữa, vì dùng redis
+//    @Scheduled(fixedDelay = SEND_MAIL_SCHEDULE)
+//    private void sendPaymentViaMail() {
+//        log.info("SEND_MAIL_SCHEDULE...");
+//        while (this.sendEmail.size() != 0) {
+//            PaymentResponse data = this.sendEmail.poll();
+//            String info = "Payment ID " + data.getId() + "\n" +
+//                    "Total amount: " + data.getPrice() + "\n" +
+//                    "Create at: " + data.getCreateOn() + "\n" +
+//                    "Movie name: " + data.getDetail().getMovieName() + "\n" +
+//                    "Hall name: " + data.getDetail().getHallName() + "\n" +
+//                    "Start time: " + data.getDetail().getStartTime() + "\n" +
+//                    "Seats: " + String.join(", ", data.getDetail().getSeats());
+//            String subject = "Movie Project: Payment infomation";
+//            emailService.sendMail(data.getEmail(), subject, info);
+//        }
+//    }
 }

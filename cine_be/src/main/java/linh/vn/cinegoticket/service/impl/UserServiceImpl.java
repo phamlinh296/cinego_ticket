@@ -15,6 +15,7 @@ import linh.vn.cinegoticket.repository.UserRepository;
 import linh.vn.cinegoticket.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "myInfo", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()", cacheManager = "objectCacheManager")
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();

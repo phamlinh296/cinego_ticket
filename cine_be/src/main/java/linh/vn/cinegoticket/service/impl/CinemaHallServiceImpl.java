@@ -9,6 +9,8 @@ import linh.vn.cinegoticket.repository.CinemaHallRepository;
 import linh.vn.cinegoticket.service.CinemaHallService;
 import linh.vn.cinegoticket.service.CinemaSeatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +26,16 @@ public class CinemaHallServiceImpl implements CinemaHallService {
     private CinemaSeatService cinemaSeatService;
 
     @Override
+    @Cacheable(value = "allHalls", cacheManager = "listCacheManager")
     public List<CinemaHall> getAllHalls() {
+        System.out.println("Fetching halls from DB...");
         return cinemaHallRepository.findAll();
     }
 
     @Override
+    @Cacheable(value = "cinemaHall", key = "#hallID", cacheManager = "objectCacheManager")
     public CinemaHall getHallById(String id) {
+        System.out.println("Fetching a hall from DB...");
         return cinemaHallRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NOT_EXISTED));
     }
 
@@ -51,6 +57,7 @@ public class CinemaHallServiceImpl implements CinemaHallService {
     }
 
     @Override
+    //    @CachePut(value = "cinemaHall", key = "#hallID", cacheManager = "objectCacheManager") //return apiresponse, kp đtg cinemahall
     public ApiResponse editHall(String hallID, CinemaHallRequest req) {
         if (!inputValidationService.checkInput(req.getName()))
             return new ApiResponse("Illeagal charaters in name", HttpStatus.BAD_REQUEST);
@@ -68,6 +75,7 @@ public class CinemaHallServiceImpl implements CinemaHallService {
     }
 
     @Override
+    @CacheEvict(value = "cinemaHall", key = "#hallID", cacheManager = "objectCacheManager", beforeInvocation = true)
     public ApiResponse removeHall(String hallID) {
         CinemaHall hall = cinemaHallRepository.findById(hallID).orElseThrow(() -> new AppException(ErrorCode.NOT_EXISTED));
         cinemaSeatService.RemoveAllSeatsFromHall(hall.getId());

@@ -102,7 +102,8 @@ public class BookingServiceImpl implements BookingService {
         //seat
         List<ShowSeat> seats = new ArrayList<>();
         for (String seat_id : this.removeDuplicate(bookingReq.getSeatsId())) {// loại bỏ các ghế bị trùng lặp trong danh sách seatsId.
-            ShowSeat seat = this.getSeatFromStatus(seat_id, show, ESeatStatus.AVAILABLE);//trạng thái seat phỉa là available
+            //ngay bước chọn ghế, khóa ghế
+            ShowSeat seat = this.getSeatFromStatusWithLock(seat_id, show, ESeatStatus.AVAILABLE);//trạng thái seat phỉa là available
             if (seat == null)
                 throw new RuntimeException("Seat ID " + seat_id + " is reserved");
 
@@ -257,7 +258,8 @@ public class BookingServiceImpl implements BookingService {
         return bookedSeat == 0;
     }
 
-    private ShowSeat getSeatFromStatus(String seat_id, CinemaShow show, ESeatStatus status) {
+    //khóa ghế ngay khi chọn
+    private ShowSeat getSeatFromStatusWithLock(String seat_id, CinemaShow show, ESeatStatus status) {
         ShowSeat seat = showSeatREPO.findByIdAndShowId(seat_id, show.getId()).orElseThrow(() -> new RuntimeException("Not found seat id: " + seat_id));
         if (seat.getStatus().name().equals(status.name()))
             return seat;

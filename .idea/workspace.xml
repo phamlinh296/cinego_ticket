@@ -5,7 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="fix: save local changes before pulling">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/controller/MovieController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/controller/MovieController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/redis/RedisConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/redis/RedisConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/repository/ShowSeatRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/repository/ShowSeatRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/MovieService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/MovieService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/BookingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/BookingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/CinemaHallServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/CinemaHallServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/MovieServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/MovieServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/PaymentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/PaymentServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/UserServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +66,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "SONARLINT_PRECOMMIT_ANALYSIS": "true",
     "Spring Boot.CinegoTicketApplication.executor": "Run",
-    "git-widget-placeholder": "Rebasing main",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/NewVolume/Spring/1.hoidanit/cinego_ticket",
     "node.js.detected.package.eslint": "true",

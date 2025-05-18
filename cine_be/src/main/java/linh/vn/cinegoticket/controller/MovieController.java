@@ -78,4 +78,11 @@ public class MovieController {
     public ResponseEntity<ApiResponse> deleteMovie(@PathVariable(name = "id") @Valid Long id) {
         return ResponseEntity.ok().body(mService.deleteMovie(id));
     }
+
+    //XÓA CACHE
+    @DeleteMapping("/clear-cache")
+    public ResponseEntity<String> clearCache() {
+        mService.evictAllCache(); // Gọi phương thức xóa cache
+        return ResponseEntity.ok("All caches have been cleared.");
+    }
 }

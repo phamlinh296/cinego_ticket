@@ -10,6 +10,8 @@ import linh.vn.cinegoticket.repository.GenreReposity;
 import linh.vn.cinegoticket.repository.MovieRepository;
 import linh.vn.cinegoticket.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ public class MovieServiceImpl implements MovieService {
     private GenreReposity genreReposity;
 
     @Override
+    @Cacheable(value = "movies", key = "#pageNumber + '-' + #pageSize", cacheManager = "listCacheManager")
     public List<MovieResponse> getMovies(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Movie> page = movieRepository.findAll(pageable);
@@ -137,5 +140,29 @@ public class MovieServiceImpl implements MovieService {
         movieRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NOT_EXISTED));
         movieRepository.deleteById(id);
         return new ApiResponse("Deleted moive ID " + id);
+    }
+
+    //XÓA CACHE
+
+    @CacheEvict(allEntries = true, cacheManager = "listCacheManager")
+    public void evictListCache() {
+        // Xóa cache từ listCacheManager
+    }
+
+    @CacheEvict(allEntries = true, cacheManager = "objectCacheManager")
+    public void evictObjectCache() {
+        // Xóa cache từ objectCacheManager
+    }
+
+    @Override
+    public void evictAllCache() {
+        evictListCache();  // Gọi phương thức xóa cache từ listCacheManager
+        evictObjectCache(); // Gọi phương thức xóa cache từ objectCacheManager
+    }
+
+    @Override
+    @CacheEvict(value = "movies", allEntries = true)
+    public void evictAllMoviesCache() {
+        // xóa toàn bộ cache có tên là "movies"
     }
 }
