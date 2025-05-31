@@ -71,14 +71,14 @@ services:
     networks:
       - cine-network
 
-  mongodb:
-    image: mongo:6.0
-    container_name: cinego-mongo
-    ports:
-      - "27017:27017"
-    restart: always
-    networks:
-      - cine-network
+  # mongodb:
+  #   image: mongo:6.0
+  #   container_name: cinego-mongo
+  #   ports:
+  #     - "27017:27017"
+  #   restart: always
+  #   networks:
+  #     - cine-network
 
   fe-service:
     container_name: cinego-fe-container
