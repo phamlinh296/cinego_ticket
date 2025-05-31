@@ -46,6 +46,40 @@ services:
     networks:
       - cine-network
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - cine-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    networks:
+      - cine-network
+
+  mongodb:
+    image: mongo:6.0
+    container_name: cinego-mongo
+    ports:
+      - "27017:27017"
+    restart: always
+    networks:
+      - cine-network
+
   fe-service:
     container_name: cinego-fe-container
     restart: unless-stopped
