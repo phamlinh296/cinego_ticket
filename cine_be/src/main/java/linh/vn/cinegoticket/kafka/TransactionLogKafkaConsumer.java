@@ -5,19 +5,21 @@ import linh.vn.cinegoticket.log.TransactionLogRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
-public class TransactionLogConsumer {
+public class TransactionLogKafkaConsumer {
 
     private final TransactionLogRepository logRepository;
 
-    public TransactionLogConsumer(TransactionLogRepository logRepository) {
+    public TransactionLogKafkaConsumer(TransactionLogRepository logRepository) {
         this.logRepository = logRepository;
     }
 
     @KafkaListener(topics = "transaction-logs-topic", groupId = "cinego-log-group")
     public void consume(TransactionLog log) {
-        logRepository.save(log); // Ghi vào MongoDB
-        System.out.println("Log saved: " + log.getAction());
+        System.out.println("Received log at: " + LocalDateTime.now() + " - Action: " + log.getAction());
+        logRepository.save(log);
     }
 }
 

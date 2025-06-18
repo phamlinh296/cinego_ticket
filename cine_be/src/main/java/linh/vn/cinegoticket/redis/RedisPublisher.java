@@ -25,5 +25,4 @@ public class RedisPublisher {
             log.info("RedisPublisher ❌ Error publishing message to Redis: " + e.getMessage());
         }
     }
-
 }

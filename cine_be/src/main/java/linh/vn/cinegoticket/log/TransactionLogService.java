@@ -1,9 +1,8 @@
 package linh.vn.cinegoticket.log;
 
 
-import linh.vn.cinegoticket.kafka.TransactionLogProducer;
+import linh.vn.cinegoticket.kafka.TransactionLogKafkaPublisher;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 public class TransactionLogService {
@@ -24,9 +23,9 @@ public class TransactionLogService {
 //    }
 
     //2. nếu dùng Kafka
-    private final TransactionLogProducer logProducer;
+    private final TransactionLogKafkaPublisher logProducer;
 
-    public TransactionLogService(TransactionLogProducer logProducer) {
+    public TransactionLogService(TransactionLogKafkaPublisher logProducer) {
         this.logProducer = logProducer;
     }
 

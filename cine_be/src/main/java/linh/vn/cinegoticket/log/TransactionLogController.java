@@ -11,10 +11,16 @@ import java.util.Map;
 public class TransactionLogController {
 
     private final TransactionLogService logService;
-
     public TransactionLogController(TransactionLogService logService) {
         this.logService = logService;
     }
+
+//    private final KafkaService kafkaService;
+
+//    public TransactionLogController(TransactionLogService logService, KafkaService kafkaService) {
+//        this.logService = logService;
+//        this.kafkaService = kafkaService;
+//    }
 
     //1. nếu lưu trực tiếp vào Mongodb
 //    @PostMapping
@@ -48,6 +54,14 @@ public class TransactionLogController {
         logService.saveLog(log); // gửi vào Kafka
         return "Sent to Kafka!";
     }
+
+    //xem các mode acks
+//    @PostMapping("/send-with-acks")
+//    public String createLogWithAcks(@RequestParam String acksMode, @RequestBody TransactionLog log) {
+//        kafkaService.sendLogWithAcks(log, acksMode);
+//        return "Sent log with acks = " + acksMode;
+//    }
+
 
 
 }
