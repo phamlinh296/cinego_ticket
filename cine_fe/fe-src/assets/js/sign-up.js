@@ -106,7 +106,7 @@ $(".account-form").on("submit", async function (event) {
     await Swal.fire({
         icon: 'success',
         title: 'Đăng kí thành công',
-        text: 'Một email đã được gửi đến bạn vui lòng kiểm tra hộp thư để xác minh danh tính tài khoản!',
+        text: 'Một email đã được gửi đến bạn. Vui lòng kiểm tra hộp thư để kích hoạt tài khoản!',
     })
 
 

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import linh.vn.cinegoticket.enums.UserStatus;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -21,10 +22,8 @@ public class User {
     private String fullName;
     private String address;
     private String email;
-
-
     private String phone;
-//    private LocalDate dob;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     private UserStatus status;

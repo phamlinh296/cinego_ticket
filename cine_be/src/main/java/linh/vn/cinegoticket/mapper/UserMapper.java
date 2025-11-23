@@ -1,24 +1,38 @@
 package linh.vn.cinegoticket.mapper;
 
 import linh.vn.cinegoticket.dto.request.UserCreateRequest;
+import linh.vn.cinegoticket.dto.request.securequest.SignUpRequest;
 import linh.vn.cinegoticket.dto.response.RoleResponse;
 import linh.vn.cinegoticket.dto.response.UserResponse;
 import linh.vn.cinegoticket.entity.User;
 import linh.vn.cinegoticket.enums.UserStatus;
 import linh.vn.cinegoticket.service.impl.RoleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+@RequiredArgsConstructor
 @Component
 public class UserMapper {
 
     private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
+    public User toPendingUser(SignUpRequest request) {
+        User user = new User();
+        user.setFullName(request.getFullname());
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPhone(request.getPhone());
+        user.setAddress(request.getAddress());
+        user.setStatus(UserStatus.BLOCKED);
+        user.setCreatedAt(LocalDateTime.now());
 
-    public UserMapper(RoleService roleService) {
-        this.roleService = roleService;
+        return user;
     }
 
     //userRequest > user

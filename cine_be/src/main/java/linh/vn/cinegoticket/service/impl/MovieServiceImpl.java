@@ -35,15 +35,16 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Cacheable(value = "movies", key = "#pageNumber + '-' + #pageSize", cacheManager = "listCacheManager")
     public List<MovieResponse> getMovies(int pageNumber, int pageSize) {
+        // Giới hạn max pageSize, tránh fe gui yêu cầu quá lớn
+        int maxPageSize = 50;
+        pageSize = Math.min(pageSize, maxPageSize);
+
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Movie> page = movieRepository.findAll(pageable);
-        List<Movie> movies = page.getContent();
 
-        List<MovieResponse> movieResponses = new ArrayList<>();
-        for (Movie movie : movies) {
-            movieResponses.add(new MovieResponse(movie));
-        }
-        return movieResponses;
+        return page.map(MovieResponse::new).getContent(); //trả List<MovieResponse>
+//        return page.map(MovieResponse::new); //trả Page<MovieResponse>; map chuyển đổi từng Movie thành MovieResponse
+
     }
 
     @Override

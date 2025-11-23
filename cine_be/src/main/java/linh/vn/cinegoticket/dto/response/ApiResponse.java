@@ -30,4 +30,31 @@ public class ApiResponse<T> {
         this.message = message;
         this.status = status;
     }
+
+    // STATIC FACTORY METHODS
+
+    public static <T> ApiResponse<T> success(String message) {
+        return ApiResponse.<T>builder()
+                .code(1000)
+                .message(message)
+                .status("SUCCESS")
+                .build();
+    }
+
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return ApiResponse.<T>builder()
+                .code(1000)
+                .message(message)
+                .data(data)
+                .status("SUCCESS")
+                .build();
+    }
+
+    public static <T> ApiResponse<T> error(String message) {
+        return ApiResponse.<T>builder()
+                .code(4000)
+                .message(message)
+                .status("ERROR")
+                .build();
+    }
 }

@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="fix: save local changes before pulling">
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/controller/MovieController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/controller/MovieController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/redis/RedisConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/redis/RedisConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/repository/ShowSeatRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/repository/ShowSeatRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/MovieService.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/MovieService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/BookingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/BookingServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/CinemaHallServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/CinemaHallServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/MovieServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/MovieServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/PaymentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/PaymentServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine_be/src/main/java/linh/vn/cinegoticket/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,13 +141,6 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="jdk-21.0.2-openjdk-21.0.2-4caba194b151-4f524021" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -189,6 +174,8 @@
       <workItem from="1740915939223" duration="16000" />
       <workItem from="1741175766238" duration="153000" />
       <workItem from="1743002960036" duration="42000" />
+      <workItem from="1762868434029" duration="23000" />
+      <workItem from="1762868491399" duration="19000" />
     </task>
     <task id="LOCAL-00001" summary="fix: save local changes before pulling">
       <option name="closed" value="true" />

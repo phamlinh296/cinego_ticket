@@ -9,28 +9,32 @@ import linh.vn.cinegoticket.dto.request.securequest.*;
 import linh.vn.cinegoticket.dto.response.ApiResponse;
 import linh.vn.cinegoticket.dto.response.AuthenticationResponse;
 import linh.vn.cinegoticket.dto.response.IntrospectResponse;
+import linh.vn.cinegoticket.entity.EmailVerificationToken;
 import linh.vn.cinegoticket.entity.InvalidatedToken;
 import linh.vn.cinegoticket.entity.User;
 import linh.vn.cinegoticket.exception.AppException;
 import linh.vn.cinegoticket.exception.ErrorCode;
+import linh.vn.cinegoticket.mapper.UserMapper;
 import linh.vn.cinegoticket.repository.InvalidatedTokenRepository;
 import linh.vn.cinegoticket.repository.UserRepository;
+import linh.vn.cinegoticket.repository.EmailVerificationTokenRepository;
 import linh.vn.cinegoticket.service.AuthenticationService;
-import lombok.AccessLevel;
+import linh.vn.cinegoticket.service.EmailService;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
@@ -39,39 +43,88 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceImpl implements AuthenticationService {
-    @NonFinal
+
     @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
+    private String SIGNER_KEY;
 
-    @NonFinal
     @Value("${jwt.valid-duration}")
-    protected long VALID_DURATION;
+    private long VALID_DURATION;
 
-    @NonFinal
     @Value("${jwt.refreshable-duration}")
-    protected long REFRESHABLE_DURATION;
+    private long REFRESHABLE_DURATION;
 
-    UserRepository userRepository;
-    InvalidatedTokenRepository invalidatedTokenRepository;
-    AuthenticationManager authenticationManager;
+    @Value("${jwt.email.domain}")
+    private String domain;
+
+    private  final UserRepository userRepository;
+    private  final InvalidatedTokenRepository invalidatedTokenRepository;
+    private  final AuthenticationManager authenticationManager;
+    private  final UserMapper userMapper;
+    private  final EmailVerificationTokenRepository emailTokenRepository;
+    private  final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ApiResponse signup(SignUpRequest request, String ip) {
-        return null;
+        if (userRepository.existsByEmail(request.getEmail())) {
+            return ApiResponse.error("Email đã tồn tại");
+        }
+        if (userRepository.existsByUsername(request.getUsername())) {
+            return ApiResponse.error("Username đã tồn tại");
+        }
+
+        User user = userMapper.toPendingUser(request);
+
+        userRepository.save(user);
+        log.info("New user registered: {} from IP: {}", user.getUsername(), ip);
+
+        // Tạo token
+        EmailVerificationToken token = new EmailVerificationToken();
+        token.setToken(UUID.randomUUID().toString());
+        token.setUser(user);
+        token.setExpiresAt(LocalDateTime.now().plusHours(24));
+        emailTokenRepository.save(token);
+
+        // Link verify
+        String verifyLink = domain + "/api/auth/verify?token=" + token.getToken();
+
+        // Gửi mail xác nhận
+        String emailBody =
+                "Chào " + user.getUsername() + " .Vui lòng click vào link sau để kích hoạt tài khoản:" + verifyLink + " .Link hết hạn sau 24 giờ.";
+
+        emailService.sendMail(
+                user.getEmail(),
+                "Xác nhận tạo tài khoản CINEGO",
+                emailBody
+        );
+
+        return ApiResponse.success("Đăng ký thành công, vui lòng kiểm tra email để xác nhận!");
     }
+
 
     @Override
     public AuthenticationResponse login(AuthenticationRequest request) {
-        try {
+//        try {
             // Xác thực thông tin đăng nhập
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
+            log.info("Authentication successful for user: {}", request.getUsername());
+
             // Lấy thông tin người dùng từ cơ sở dữ liệu
-            var user = userRepository.findByUsername(request.getUsername())
-                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+//            var user = userRepository.findByUsername(request.getUsername())
+//                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+//        Spring Security đã tự load UserDetails trong quá trình authenticate.
+//➡ Việc load lại DB lần thứ 2 không sai nhưng không cần thiết, chậm hệ thống.
+//✔ Cách đúng: Lấy user từ SecurityContext:
+
+        User user = (User) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        log.info(user.getUsername() + " logged in successfully.");
 
             // Tạo JWT: chỉ tạo accesstoken
             var accessToken = generateToken(user);
@@ -82,10 +135,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //                    .refreshToken(refreshToken)
                     .authenticated(true)
                     .build();
-        } catch (Exception e) {
-            log.error("Login failed: {}", e.getMessage());
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
+//        }
+//        catch (Exception e) {
+//            log.error("Login failed: {}", e.getMessage());
+//            throw new AppException(ErrorCode.UNAUTHENTICATED);
+//        }
     }
 
     @Override
