@@ -20,4 +20,6 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
     Optional<Booking> findByUserIdAndMovieIdAndStatus(@Param("user_id") String user_id, @Param("movie_id") long movie_id, @Param("status") BookingStatus status);
 
     int countByShowId(String show_id);
+
+
 }

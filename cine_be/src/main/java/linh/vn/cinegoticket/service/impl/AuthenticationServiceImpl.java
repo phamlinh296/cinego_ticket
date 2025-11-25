@@ -12,6 +12,7 @@ import linh.vn.cinegoticket.dto.response.IntrospectResponse;
 import linh.vn.cinegoticket.entity.EmailVerificationToken;
 import linh.vn.cinegoticket.entity.InvalidatedToken;
 import linh.vn.cinegoticket.entity.User;
+import linh.vn.cinegoticket.enums.UserStatus;
 import linh.vn.cinegoticket.exception.AppException;
 import linh.vn.cinegoticket.exception.ErrorCode;
 import linh.vn.cinegoticket.mapper.UserMapper;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -105,41 +107,47 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse login(AuthenticationRequest request) {
-//        try {
-            // Xác thực thông tin đăng nhập
-            authenticationManager.authenticate(
+        // Xác thực thông tin đăng nhập
+        Authentication authentication =authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
             log.info("Authentication successful for user: {}", request.getUsername());
 
-            // Lấy thông tin người dùng từ cơ sở dữ liệu
-//            var user = userRepository.findByUsername(request.getUsername())
-//                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+        //        Spring Security đã tự load UserDetails trong quá trình authenticate.
+        //➡ Việc load lại DB lần thứ 2 không sai nhưng không cần thiết, chậm hệ thống.
+        //✔ Cách đúng: Lấy user từ SecurityContext:
 
-//        Spring Security đã tự load UserDetails trong quá trình authenticate.
-//➡ Việc load lại DB lần thứ 2 không sai nhưng không cần thiết, chậm hệ thống.
-//✔ Cách đúng: Lấy user từ SecurityContext:
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
 
-        User user = (User) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        if (principal instanceof org.springframework.security.core.userdetails.User) {
+            username = ((org.springframework.security.core.userdetails.User) principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        // Lấy entity User từ DB
+        log.info("Fetching user details for username: {}", username);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException("User not found after authentication", ErrorCode.UNAUTHENTICATED));
+
+        if(!user.getStatus().equals(UserStatus.ACTIVE)){
+            throw new AppException("Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email để xác nhận.", ErrorCode.UNAUTHENTICATED);
+        }
 
         log.info(user.getUsername() + " logged in successfully.");
 
-            // Tạo JWT: chỉ tạo accesstoken
-            var accessToken = generateToken(user);
-//            var refreshToken = generateToken(user, REFRESHABLE_DURATION);
+        // Tạo JWT: chỉ tạo accesstoken
+        var accessToken = generateToken(user);
+//      var refreshToken = generateToken(user, REFRESHABLE_DURATION);
 
             return AuthenticationResponse.builder()
                     .token(accessToken)
 //                    .refreshToken(refreshToken)
                     .authenticated(true)
                     .build();
-//        }
-//        catch (Exception e) {
-//            log.error("Login failed: {}", e.getMessage());
-//            throw new AppException(ErrorCode.UNAUTHENTICATED);
-//        }
+
     }
 
     @Override
