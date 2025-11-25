@@ -21,5 +21,13 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 
     int countByShowId(String show_id);
 
-
+    // danh sách Movie mà user đã xem (trạng thái BOOKED)
+    @Query("""
+        SELECT b FROM Booking b
+        JOIN FETCH b.show s
+        JOIN FETCH s.movie m
+        WHERE b.user.id = :userId
+        AND b.status = linh.vn.cinegoticket.enums.BookingStatus.BOOKED
+    """)
+    List<Booking> findPaidBookingsWithMovies(String userId);
 }
