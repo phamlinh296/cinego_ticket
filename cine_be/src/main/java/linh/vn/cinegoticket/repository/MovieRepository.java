@@ -27,7 +27,7 @@ public interface MovieRepository extends
     @Query("""
     SELECT m FROM Movie m
     LEFT JOIN CinemaShow s ON s.movie.id = m.id
-    LEFT JOIN Booking b ON b.show.id = s.id AND b.status = linh.vn.cinegoticket.enums.BookingStatus.PAID
+    LEFT JOIN Booking b ON b.show.id = s.id AND b.status = linh.vn.cinegoticket.enums.BookingStatus.BOOKED
     GROUP BY m.id
     ORDER BY COUNT(b.id) DESC
     """)
