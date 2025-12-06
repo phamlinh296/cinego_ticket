@@ -164,7 +164,7 @@ public class BookingServiceImpl implements BookingService {
                 if (payments.isEmpty() || payments.get(0).getStatus() != PaymentStatus.PAID) {
                     System.out.println("Payment has not been completed yet. I am going to create a new payment");
                     PaymentRequest req = new PaymentRequest(booking_id, "");
-                    paymentSER.create(username, req, "127.0.0.1");
+                    paymentSER.createPayment(username, req, "127.0.0.1");
                 }
                 break;
 

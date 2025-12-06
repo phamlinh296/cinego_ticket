@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import linh.vn.cinegoticket.dto.request.HashRequest;
 import linh.vn.cinegoticket.dto.request.PaymentRequest;
+import linh.vn.cinegoticket.dto.response.PaymentResponse;
 import linh.vn.cinegoticket.entity.Payment;
 import linh.vn.cinegoticket.service.EmailService;
 import linh.vn.cinegoticket.service.PaymentService;
@@ -25,7 +26,8 @@ public class PaymentController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createPayment(Principal principal, @Valid @RequestBody PaymentRequest request,
                                            HttpServletRequest servletRequest) {
-        return ResponseEntity.ok().body(paymentService.create(principal.getName(), request, "127.0.0.1"));// test local dùng ip nay
+        PaymentResponse paymentResponse = paymentService.createPayment(principal.getName(), request, "127.0.0.1"); // test local dùng ip nay
+        return ResponseEntity.ok().body(paymentResponse);
     }
 
     @GetMapping("/{id}")

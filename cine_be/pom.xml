@@ -125,6 +125,12 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!-- Spring for Apache Kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
         <!--  chuyển đổi giữa Java Object ↔ JSON-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

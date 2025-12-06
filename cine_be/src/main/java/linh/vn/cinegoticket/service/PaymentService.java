@@ -12,7 +12,9 @@ import java.util.List;
 @Service
 public interface PaymentService {
 
-    public PaymentResponse create(String username, PaymentRequest request, String ip_addr);
+    public PaymentResponse createPayment(String username, PaymentRequest request, String ip_addr);
+
+    void publishPaymentEvent(Payment payment, String ip);
 
     public PaymentResponse getFromId(String username, String payment_id);
 

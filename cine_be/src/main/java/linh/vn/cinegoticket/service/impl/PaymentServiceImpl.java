@@ -1,5 +1,6 @@
 package linh.vn.cinegoticket.service.impl;
 
+import linh.vn.cinegoticket.dto.PaymentEvent;
 import linh.vn.cinegoticket.dto.request.HashRequest;
 import linh.vn.cinegoticket.dto.request.PaymentRequest;
 import linh.vn.cinegoticket.dto.response.ApiResponse;
@@ -21,14 +22,11 @@ import linh.vn.cinegoticket.service.PaymentService;
 import linh.vn.cinegoticket.utils.HashUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -50,11 +48,16 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private ShowSeatRepository showSeatRepository;
 
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
     @Override
-    public PaymentResponse create(String username, PaymentRequest request, String ip_addr) {
+    public PaymentResponse createPayment(String username, PaymentRequest request, String ip_addr) {
+        // valid: booking tồn tại, thuộc về user, chưa thanh toán, chưa có payment pending
         Booking booking = bookingRepository.findById(request.getBookingID()).orElseThrow(() -> new RuntimeException("Ticket ID " + request.getBookingID() + " is not found"));
         if (!booking.getStatus().equals(BookingStatus.PENDING))
             throw new RuntimeException("This ticket have been already paid or canceled before.");
+
         List<Payment> payments = paymentRepository.findAllByBookingId(request.getBookingID());
         if (payments.size() != 0)
             throw new RuntimeException("This ticket have been already pending for payment.");
@@ -64,6 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         //Tính tổng giá tiền dựa trên danh sách ghế đã đặt
         double price = booking.getPriceFromListSeats();
+
         //tạo payment mới
         Payment payment = new Payment(booking, price);
         payment = paymentRepository.save(payment);
@@ -78,10 +82,27 @@ public class PaymentServiceImpl implements PaymentService {
             payment = paymentRepository.save(payment);
         }
 
+        // Publish Kafka Event for Anomaly Detection
+        publishPaymentEvent(payment, ip_addr);
+
         PaymentResponse response = new PaymentResponse(payment);
         response.setPaymentUrl(res != null ? res : "");
 
         return response;
+    }
+
+    @Override
+    public void publishPaymentEvent(Payment payment, String ip) {
+        PaymentEvent event = new PaymentEvent();
+        event.setPaymentId(payment.getId());
+        event.setUserId(payment.getBooking().getUser().getId());
+        event.setAmount(payment.getAmount());
+        event.setStatus(payment.getStatus().name());
+        event.setDeviceIp(ip);
+        event.setTime(new Date());
+        event.setLocation("HN"); // nếu mock
+
+        kafkaTemplate.send("payment-events", event);
     }
 
     @Override

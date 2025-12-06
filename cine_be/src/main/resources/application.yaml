@@ -1,0 +1,69 @@
+server:
+  port: ${PORT:9595}
+  # servlet:
+  #   context-path: /vephim
+
+spring:
+  application:
+    name: cinegoticket
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        generate_statistics: true
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/cinego}
+    username: ${DATABASE_USERNAME:username}
+    password: ${DATABASE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:phamylinh.kc@gmail.com}
+    password: ${MAIL_PASSWORD:jemzkvxfvrdjlcqk}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 30s
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    consumer:
+      group-id: anomaly-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+    listener:
+      missing-topics-fatal: false
+
+app:
+  default_sender: ${MAIL_SENDER:phamylinh.kc@gmail.com}
+
+jwt:
+  signerKey: ${JWT_SECRET:sEzN49A5eMzybTam7Km8m5KHpF36Vp+YnVZ/B5VaVsUrHvgDBvnIEy/MznZGVl+5}
+  valid-duration: 18000
+  refreshable-duration: 18000
+  email:
+    domain: http://localhost:9595
