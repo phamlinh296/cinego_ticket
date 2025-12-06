@@ -54,6 +54,9 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+#        spring.json.value.default.type: com.cinego.anomaly.dto.PaymentEvent #Spring JsonDeserializer tự map JSON → PaymentEvent. Nếu không có dòng này, nó sẽ báo lỗi ClassNotFoundException.
+        #Không cần chỉ định containerFactory.
+        #YAML chỉ hỗ trợ 1 type duy nhất → chỉ nhận được một DTO.
 
     listener:
       missing-topics-fatal: false

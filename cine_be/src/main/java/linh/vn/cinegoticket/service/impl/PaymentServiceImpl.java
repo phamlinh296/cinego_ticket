@@ -100,7 +100,8 @@ public class PaymentServiceImpl implements PaymentService {
         event.setStatus(payment.getStatus().name());
         event.setDeviceIp(ip);
         event.setTime(new Date());
-        event.setLocation("HN"); // nếu mock
+        event.setLocation("VN"); // nếu mock
+//        event.setReturnCode(returnCodeFromGateway); // if available
 
         kafkaTemplate.send("payment-events", event);
     }

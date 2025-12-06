@@ -12,6 +12,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -35,6 +36,12 @@ public class RedisConfig {
     public CacheManager objectCacheManager(final RedisConnectionFactory redisConnectionFactory) {
         return build(redisConnectionFactory, RedisSerializer.json(), Duration.ofHours(1)); // TTL 1 giờ
     }
+
+    @Bean
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory factory) {
+        return new StringRedisTemplate(factory);
+    }
+
 
     private CacheManager build(final RedisConnectionFactory redisConnectionFactory,
                                final RedisSerializer<?> redisSerializer,

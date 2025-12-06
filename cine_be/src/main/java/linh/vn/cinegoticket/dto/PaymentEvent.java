@@ -13,4 +13,6 @@ public class PaymentEvent {
     private Date time;
     private String status;
     private String location;
+
+    private String returnCode; // optional, VNPay return code if available
 }
