@@ -19,13 +19,15 @@ public class AnomalyController {
 
     private final AnomalyService anomalyService;
 
+    //Lấy danh sách all log giao dịch bất thường
     @GetMapping
     public List<AnomalyLog> getAll() {
         return anomalyService.listAll();
     }
 
-    @GetMapping("/stats")
-    public AnomalyStatsResponse getStats() {
-        return anomalyService.getStatsLast7Days();
-    }
+    // dashboard - thống kê giao dịch bất thường
+//    @GetMapping("/stats")
+//    public AnomalyStatsResponse getStats() {
+//        return anomalyService.getStatsLast7Days();
+//    }
 }

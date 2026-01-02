@@ -6,7 +6,7 @@ import linh.vn.cinegoticket.entity.AnomalyLog;
 import java.util.List;
 
 public interface AnomalyService {
-    AnomalyStatsResponse getStatsLast7Days();
+//    AnomalyStatsResponse getStatsLast7Days();
 
     List<AnomalyLog> listAll();
 }
