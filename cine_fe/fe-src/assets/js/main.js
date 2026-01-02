@@ -27,7 +27,7 @@
             <div class="footer-bottom">
                 <div class="footer-bottom-area">
                   <div class="left">
-                      <p>Copyright © 2023.All Rights Reserved By <a href="movie-list.html#0">PenguTicket </a></p>
+                      <p>Copyright © 2023.All Rights Reserved By <a href="movie-list.html#0">CinegoTicket </a></p>
                   </div>
                 </div>
             </div>

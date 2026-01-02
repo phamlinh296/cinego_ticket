@@ -145,7 +145,7 @@
             left: 0;
             bottom: 0;
             right: 0;
-            background-color: rgba(0, 18, 50, 0.4);
+            background-color: rgba(15, 0, 50, 0.4);
         }
         @include breakpoint(lg) {
             width: calc(25% - 28px);
@@ -491,8 +491,8 @@
     &::before {
         @extend %pa;
         opacity: .8;
-        background: -webkit-gradient(linear, left top, right top, from(#0f5ae0), to(#7400ba));
-        background: linear-gradient(90deg, #0f5ae0 0%, #7400ba 100%);
+        background: -webkit-gradient(linear, left top, right top, from(#0fe081), to(#7400ba));
+        background: linear-gradient(90deg, #0fe081 0%, #7400ba 100%);
         left: 0px;
         top: 0px;
         right: 0;
