@@ -90,7 +90,7 @@ public class AnomalyDetectorService {
 
     private boolean isMultipleFast(PaymentEvent evt) {
         if (evt.getUserId() == null) return false;
-        long now = evt.getTime() != null ? Long.parseLong(evt.getTime().toString()) : System.currentTimeMillis();
+        long now = evt.getTime() != null ? evt.getTime().getTime() : System.currentTimeMillis();
         recentTimestamps.putIfAbsent(evt.getUserId(), new ArrayList<>());
         List<Long> list = recentTimestamps.get(evt.getUserId());
         synchronized (list) {

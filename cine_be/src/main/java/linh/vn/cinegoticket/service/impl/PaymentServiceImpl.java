@@ -83,7 +83,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // Publish Kafka Event for Anomaly Detection
-        publishPaymentEvent(payment, ip_addr);
+//        publishPaymentEvent(payment, ip_addr);
 
         PaymentResponse response = new PaymentResponse(payment);
         response.setPaymentUrl(res != null ? res : "");
@@ -146,12 +146,19 @@ public class PaymentServiceImpl implements PaymentService {
                     payment.setStatus(PaymentStatus.PAID);
                     paymentRepository.save(payment);
 
+                    // ✅ PUBLISH KAFKA EVENT
+                    publishPaymentEvent(payment, "VNPay-Callback");
+
                     return new ApiResponse("Ticket is paid. You will receive this email", "PAID");
                 }
                 //2: Giao dịch không thành công (chưa thanh toán).
                 if (paid == 2) {
                     payment.setStatus(PaymentStatus.CANCLED);
                     paymentRepository.save(payment);
+
+                    // ✅ vẫn publish (FAILED cũng là dữ liệu anomaly)
+                    publishPaymentEvent(payment, "VNPay-Callback");
+
                     return new ApiResponse("Ticket is unpaid", "UNPAID");
                 }
             } catch (Exception e) {
