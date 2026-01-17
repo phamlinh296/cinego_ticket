@@ -36,21 +36,21 @@ public class GlobalExceptionHandler {
     }
 
     //Excep chưa định nghĩa
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ApiResponse<?>> handleException(Exception ex, HttpServletRequest req) {
-        String uri = req.getRequestURI();
-
-        // ❗ Bỏ qua Swagger hoặc file tĩnh, de khi app khoi dong cham tren render k bi loi swagger
-        if (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs") || uri.endsWith(".html") || uri.endsWith(".js") || uri.endsWith(".css")) {
-            return null; // Trả về cho Spring xử lý mặc định
-        }
-
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
-
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    public ResponseEntity<ApiResponse<?>> handleException(Exception ex, HttpServletRequest req) {
+//        String uri = req.getRequestURI();
+//
+//        // ❗ Bỏ qua Swagger hoặc file tĩnh, de khi app khoi dong cham tren render k bi loi swagger
+//        if (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs") || uri.endsWith(".html") || uri.endsWith(".js") || uri.endsWith(".css")) {
+//            return null; // Trả về cho Spring xử lý mặc định
+//        }
+//
+//        ApiResponse<?> apiResponse = new ApiResponse<>();
+//        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
+//        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
+//
+//        return ResponseEntity.badRequest().body(apiResponse);
+//    }
 
 
     //Excep 401: access token hết hạn

@@ -11,12 +11,15 @@ import linh.vn.cinegoticket.dto.response.AuthenticationResponse;
 import linh.vn.cinegoticket.dto.response.IntrospectResponse;
 import linh.vn.cinegoticket.entity.EmailVerificationToken;
 import linh.vn.cinegoticket.entity.InvalidatedToken;
+import linh.vn.cinegoticket.entity.Role;
 import linh.vn.cinegoticket.entity.User;
+import linh.vn.cinegoticket.enums.ERole;
 import linh.vn.cinegoticket.enums.UserStatus;
 import linh.vn.cinegoticket.exception.AppException;
 import linh.vn.cinegoticket.exception.ErrorCode;
 import linh.vn.cinegoticket.mapper.UserMapper;
 import linh.vn.cinegoticket.repository.InvalidatedTokenRepository;
+import linh.vn.cinegoticket.repository.RoleRepository;
 import linh.vn.cinegoticket.repository.UserRepository;
 import linh.vn.cinegoticket.repository.EmailVerificationTokenRepository;
 import linh.vn.cinegoticket.service.AuthenticationService;
@@ -39,6 +42,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -66,6 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private  final EmailVerificationTokenRepository emailTokenRepository;
     private  final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Override
     public ApiResponse signup(SignUpRequest request, String ip) {
@@ -77,6 +82,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         User user = userMapper.toPendingUser(request);
+
+        // GÁN ROLE_USER
+        Role userRole = roleRepository.findByName(ERole.USER.name())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_EXISTED));
+        user.setRoles(Set.of(userRole));
 
         userRepository.save(user);
         log.info("New user registered: {} from IP: {}", user.getUsername(), ip);

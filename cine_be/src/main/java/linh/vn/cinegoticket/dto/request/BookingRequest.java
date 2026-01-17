@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 public class BookingRequest {
 
-    @JsonProperty(value = "seats_id")
+    @JsonProperty(value = "seat_ids")
     @NotNull
     List<String> seatsId;
 

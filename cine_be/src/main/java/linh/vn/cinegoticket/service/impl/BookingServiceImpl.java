@@ -94,8 +94,8 @@ public class BookingServiceImpl implements BookingService {
         //show, slg vé đặt trong show đặt max; còn seat trống trong show k
         CinemaShow show = showREPO.findById(bookingReq.getShowId()).orElseThrow(() -> new RuntimeException("Show is not found"));
         int total_tickets_of_user_from_show = bookingREPO.countByShowId(show.getId());
-        if (total_tickets_of_user_from_show == this.MAX_TICKETS_PER_SHOW)
-            throw new RuntimeException("You have already " + this.MAX_TICKETS_PER_SHOW + " tickets in this show, so you can pay no more tickets");
+//        if (total_tickets_of_user_from_show == this.MAX_TICKETS_PER_SHOW)
+//            throw new RuntimeException("You have already " + this.MAX_TICKETS_PER_SHOW + " tickets in this show, so you can pay no more tickets");
         if (this.seatsAreFull(show))
             throw new RuntimeException("Sorry, seats of this show are full. Please choose another show");
 

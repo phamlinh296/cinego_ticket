@@ -70,3 +70,8 @@ jwt:
   refreshable-duration: 18000
   email:
     domain: http://localhost:9595
+
+#off log kafka
+logging:
+  level:
+    org.apache.kafka: ERROR

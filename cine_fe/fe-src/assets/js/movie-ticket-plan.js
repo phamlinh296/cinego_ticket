@@ -30,7 +30,7 @@ $(async function () {
     for (let i = 0; i < shows.length; i++) {
         let show = shows[i]
         let startTime = new Date(show.startTime)
-        div.find(".movie-schedule").append(`<div class="item" data-show-id="${formatContentHTML(show.showID)}">${GetTimeFormat(startTime)}</div`)
+        div.find(".movie-schedule").append(`<div class="item" data-show-id="${formatContentHTML(show.id)}">${GetTimeFormat(startTime)}</div>`)
     }
 
     $(".seat-plan-wrapper").append(div)
@@ -44,6 +44,7 @@ $(async function () {
 
         return window.location.href = ('/movie-seat-plan.html?show-id=' + formatContentHTML(showId))
     });
+
 
     if (notShowExist) {
         await Swal.fire({
