@@ -1,5 +1,6 @@
 package linh.vn.cinegoticket.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import linh.vn.cinegoticket.dto.request.BookingRequest;
 import linh.vn.cinegoticket.dto.request.PaymentRequest;
 import linh.vn.cinegoticket.dto.response.ApiResponse;
@@ -135,7 +136,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     //thay đổi trajng thái vé- booking thủ công của admin(vd:  hủy vé sau khi đặt., cập nhật trạng thái vé sau đặt xem thành công hay tbai)
-    public ApiResponse setBookingStatus(String username, String booking_id, String status) {
+    public ApiResponse setBookingStatus(String username, String booking_id, String status,  HttpServletRequest servletRequest) {
         User user = userREPO.findByUsername(username).orElseThrow(() -> new RuntimeException("User is not found"));
         Booking booking = bookingREPO.findByIdAndUserId(booking_id, user.getId()).orElseThrow(() -> new RuntimeException("Ticket is not found"));
 
@@ -164,7 +165,7 @@ public class BookingServiceImpl implements BookingService {
                 if (payments.isEmpty() || payments.get(0).getStatus() != PaymentStatus.PAID) {
                     System.out.println("Payment has not been completed yet. I am going to create a new payment");
                     PaymentRequest req = new PaymentRequest(booking_id, "");
-                    paymentSER.createPayment(username, req, "127.0.0.1");
+                    paymentSER.createPayment(username, req, "127.0.0.1", servletRequest);
                 }
                 break;
 

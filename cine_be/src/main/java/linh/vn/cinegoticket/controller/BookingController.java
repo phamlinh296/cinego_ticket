@@ -1,5 +1,6 @@
 package linh.vn.cinegoticket.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import linh.vn.cinegoticket.dto.request.BookingRequest;
 import linh.vn.cinegoticket.service.BookingService;
@@ -65,7 +66,7 @@ public class BookingController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> setBookingStatusFromUsername(@Valid @PathVariable(value = "username") String username,
                                                           @Valid @PathVariable(value = "booking_id") String booking_id,
-                                                          @RequestParam("value") @Valid String status) {
-        return ResponseEntity.ok().body(bookingService.setBookingStatus(username, booking_id, status));
+                                                          @RequestParam("value") @Valid String status,  HttpServletRequest servletRequest) {
+        return ResponseEntity.ok().body(bookingService.setBookingStatus(username, booking_id, status, servletRequest));
     }
 }

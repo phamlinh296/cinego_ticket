@@ -1,5 +1,6 @@
 package linh.vn.cinegoticket.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import linh.vn.cinegoticket.dto.PaymentEvent;
 import linh.vn.cinegoticket.dto.request.HashRequest;
 import linh.vn.cinegoticket.dto.request.PaymentRequest;
@@ -52,7 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
     private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
-    public PaymentResponse createPayment(String username, PaymentRequest request, String ip_addr) {
+    public PaymentResponse createPayment(String username, PaymentRequest request, String ip_addr, HttpServletRequest servletRequest) {
         // valid: booking tồn tại, thuộc về user, chưa thanh toán, chưa có payment pending
         Booking booking = bookingRepository.findById(request.getBookingID()).orElseThrow(() -> new RuntimeException("Ticket ID " + request.getBookingID() + " is not found"));
         if (!booking.getStatus().equals(BookingStatus.PENDING))
@@ -75,7 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
         //Gửi request thanh toán đến cổng VNPay; Nếu VNPay.createPay() lỗi, trạng thái payment bị đổi thành CANCLED.
         String res = null;
         try {
-            res = vnPayService.createPay(payment, request.getPaymentType(), ip_addr);
+            res = vnPayService.createPay(payment, request.getPaymentType(), ip_addr , servletRequest);
         } catch (Exception e) {
             payment.setStatus(PaymentStatus.CANCLED);
             log.error("Error while creating VNPay payment for Booking ID {}: {}", booking.getId(), e.getMessage(), e);
@@ -132,8 +133,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ApiResponse verifyPayment(String username, String payment_id) {
-        Payment payment = paymentRepository.findById(payment_id).orElseThrow(() -> new RuntimeException("Payment ID not found"));
+    public ApiResponse verifyPayment(String username, String tnxRef) {
+        Payment payment = paymentRepository.findByTxnRef(tnxRef).orElseThrow(() -> new RuntimeException("Payment tnxref not found"));
         String userOfPayment = payment.getBooking().getUser().getUsername();
         if (userOfPayment.equals(username)) {
             if (payment.getStatus() != PaymentStatus.PENDING)
@@ -145,6 +146,9 @@ public class PaymentServiceImpl implements PaymentService {
                 if (paid == 0) {
                     payment.setStatus(PaymentStatus.PAID);
                     paymentRepository.save(payment);
+
+                    //gui mail = redis pubsub
+                    this.addPaymentMail(payment);
 
                     // ✅ PUBLISH KAFKA EVENT
                     publishPaymentEvent(payment, "VNPay-Callback");

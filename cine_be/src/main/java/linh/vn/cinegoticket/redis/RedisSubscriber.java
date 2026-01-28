@@ -42,7 +42,7 @@ public class RedisSubscriber implements MessageListener {
 
 
             // Tạo nội dung email
-            String info = "Payment ID " + data.getId() + "\n" +
+            String info = "Payment ID: " + data.getId() + "\n" +
                     "Total amount: " + data.getPrice() + "\n" +
                     "Create at: " + data.getCreateOn() + "\n" +
                     "Movie name: " + data.getDetail().getMovieName() + "\n" +
@@ -51,7 +51,7 @@ public class RedisSubscriber implements MessageListener {
                     "Seats: " + String.join(", ", data.getDetail().getSeats());
 
             // Gửi email
-            String subject = "Movie Project: Payment Information";
+            String subject = "Cinego Ticket: Payment Information";
             emailService.sendMail(data.getEmail(), subject, info);
 
             log.info("RedisSubscriber ✅ Email sent to: " + data.getEmail());

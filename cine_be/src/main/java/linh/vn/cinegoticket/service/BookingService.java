@@ -1,5 +1,6 @@
 package linh.vn.cinegoticket.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import linh.vn.cinegoticket.dto.request.BookingRequest;
 import linh.vn.cinegoticket.dto.response.ApiResponse;
 import linh.vn.cinegoticket.dto.response.BookingResponse;
@@ -17,5 +18,5 @@ public interface BookingService {
 
     public List<BookingResponse> listOfBooking(String username);
 
-    public ApiResponse setBookingStatus(String username, String booking_id, String status);
+    public ApiResponse setBookingStatus(String username, String booking_id, String status,  HttpServletRequest servletRequest);
 }

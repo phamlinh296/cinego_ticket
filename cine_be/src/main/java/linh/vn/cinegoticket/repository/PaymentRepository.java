@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, String> {
     @Query(value = "SELECT p FROM Payment p WHERE p.booking.user.id = :user_id")
@@ -13,4 +14,6 @@ public interface PaymentRepository extends JpaRepository<Payment, String> {
 
     @Query(value = "SELECT p FROM Payment p WHERE p.booking.id = :booking_id")
     public List<Payment> findAllByBookingId(@Param("booking_id") String booking_id);
+
+    public Optional<Payment> findByTxnRef(String txnRef);
 }

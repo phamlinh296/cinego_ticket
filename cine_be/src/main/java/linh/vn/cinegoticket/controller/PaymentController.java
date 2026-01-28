@@ -26,7 +26,7 @@ public class PaymentController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createPayment(Principal principal, @Valid @RequestBody PaymentRequest request,
                                            HttpServletRequest servletRequest) {
-        PaymentResponse paymentResponse = paymentService.createPayment(principal.getName(), request, "127.0.0.1"); // test local dùng ip nay
+        PaymentResponse paymentResponse = paymentService.createPayment(principal.getName(), request, "127.0.0.1", servletRequest); // test local dùng ip nay
         return ResponseEntity.ok().body(paymentResponse);
     }
 
@@ -37,7 +37,7 @@ public class PaymentController {
     }
 
     @PostMapping("/{id}/verify")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> verifyPaymentById(Principal principal, @Valid @PathVariable(name = "id") String id) {
         return ResponseEntity.ok().body(paymentService.verifyPayment(principal.getName(), id));
     }
@@ -75,4 +75,12 @@ public class PaymentController {
         emailService.sendMail(to, "Test Email", "Hello! This is a test email from Spring Boot.");
         return ResponseEntity.ok("PaymentController test: Email sent to " + to);
     }
+
+
+    /////////
+    @GetMapping("/vnpay/return")
+    public String vnpayReturn(HttpServletRequest request) {
+        return "Thanh toan xong";
+    }
+
 }

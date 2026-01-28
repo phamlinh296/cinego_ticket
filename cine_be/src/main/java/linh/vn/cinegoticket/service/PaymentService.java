@@ -1,5 +1,6 @@
 package linh.vn.cinegoticket.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import linh.vn.cinegoticket.dto.request.HashRequest;
 import linh.vn.cinegoticket.dto.request.PaymentRequest;
 import linh.vn.cinegoticket.dto.response.ApiResponse;
@@ -12,7 +13,7 @@ import java.util.List;
 @Service
 public interface PaymentService {
 
-    public PaymentResponse createPayment(String username, PaymentRequest request, String ip_addr);
+    public PaymentResponse createPayment(String username, PaymentRequest request, String ip_addr, HttpServletRequest servletRequest);
 
     void publishPaymentEvent(Payment payment, String ip);
 

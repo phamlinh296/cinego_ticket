@@ -34,6 +34,9 @@ public class Payment {
     @Column(name = "update_at", nullable = true, updatable = true)
     private Date updateAt;
 
+    @Column(unique = true)
+    private String txnRef;
+
     //PAYMENT- BOOKING =1-1
     @OneToOne
     private Booking booking;
