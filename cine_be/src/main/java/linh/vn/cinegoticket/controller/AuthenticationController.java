@@ -64,7 +64,8 @@ public class AuthenticationController {
 //    }
 
     @GetMapping("/token")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<ApiResponse> getMe() {
         return ResponseEntity.ok(new ApiResponse("ok"));
     }

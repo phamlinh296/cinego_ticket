@@ -17,12 +17,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -104,6 +108,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String username) {
         userRepository.deleteByUsername(username);
+    }
+
+    @Override
+    public Collection<Role> getRoleFromUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user.getRoles();
+    }
+
+    @Override
+    public Boolean UsernameIsExisted(String name) {
+        String regex = "^[a-zA-Z0-9._]{5,}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(name);
+
+        if (!matcher.matches())
+            throw new AppException(
+                    "Username is unvalid. Username must follow these requirements:\n + At least 5 characters long\n + No whitespace and special character, except . and _");
+        if (userRepository.existsByUsername(name))
+            return true;
+        return false;
+    }
+    @Override
+    public boolean userHaveRole(String username, ERole role) {
+        Collection<Role> roles = this.getRoleFromUser(username);
+        for (Role r : roles) {
+            if (r.getName().equals(role.name()))
+                return true;
+        }
+        return false;
     }
 
 }

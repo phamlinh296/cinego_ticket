@@ -25,7 +25,8 @@ public class CinemaHallController {
     //USER
 
     @GetMapping("/getall")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok().body(cinemaHallService.getAllHalls());
     }
