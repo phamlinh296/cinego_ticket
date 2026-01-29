@@ -189,11 +189,14 @@ function RenderGenreList() {
                 <td id="hall-totalCol"></td>
                 <td id="hall-totalRow"></td>
                 <td> 
-                    <button type="button" class="btn btn-info col-4 mx-2" id="hall-edit">Edit</button> 
-                    <button type="button" class="btn btn-danger col-4 mx-2" id="hall-delete">Delete</button>  
+                    
+                     
                 </td>
             </tr>
             `)
+            //<button type="button" class="btn btn-info col-4 mx-2" id="hall-edit">Edit</button> 
+            //<button type="button" class="btn btn-danger col-4 mx-2" id="hall-delete">Delete</button>
+            //<button type="button" class="btn btn-danger" id="hall-delete">Delete</button>  
 
             item.find("#hall-id").text(hall.id)
             item.find("#hall-name").text(hall.name)

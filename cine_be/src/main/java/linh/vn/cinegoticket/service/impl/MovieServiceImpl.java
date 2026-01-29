@@ -17,10 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,16 +91,32 @@ public class MovieServiceImpl implements MovieService {
     }
 
     //ADMIN
+//    @Override
+//    public Movie saveMovie(Movie movie) {
+//        if (movieRepository.existsByTitle(movie.getTitle()))
+//            throw new AppException(ErrorCode.EXISTED);
+//        //chỉ thêm movie vs genre sẵn
+//        List<Genre> genres = movie.getGenres().stream()
+//                .map(genre -> genreReposity.findByGenre(genre.getGenre())).collect(Collectors.toList());
+//        movie.setGenres(genres);
+//        return movieRepository.save(movie);
+//    }
     @Override
     public Movie saveMovie(Movie movie) {
         if (movieRepository.existsByTitle(movie.getTitle()))
             throw new AppException(ErrorCode.EXISTED);
-        //chỉ thêm movie vs genre sẵn
-        List<Genre> genres = movie.getGenres().stream()
-                .map(genre -> genreReposity.findByGenre(genre.getGenre())).collect(Collectors.toList());
+
+        List<Genre> genres = Optional.ofNullable(movie.getGenres())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(g -> genreReposity.findByGenre(g.getGenre()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
         movie.setGenres(genres);
         return movieRepository.save(movie);
     }
+
 
     public ApiResponse saveMovieList(List<Movie> movies) {
         int successCount = 0;

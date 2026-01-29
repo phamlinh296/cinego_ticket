@@ -45,7 +45,7 @@ public class GenreController {
     }
 
     //Cập nhật thông tin của một thể loại phim dựa trên ID
-    @PutMapping("update/{id}")
+    @PutMapping("{id}/update")
     @PreAuthorize("hasRole('ADMIN')")
     public Genre updateGenre(@PathVariable(name = "id") @Valid Long id, @RequestBody @Valid Genre genre) {
         genre.setId(id);

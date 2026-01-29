@@ -16,7 +16,7 @@ import java.util.Date;
 public class CinemaHall {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", unique = true, nullable = false, length = 26, insertable = false)
+    @Column(name = "id", nullable = false, updatable = false)
     private String id;
 
     @Column(name = "name", nullable = false)

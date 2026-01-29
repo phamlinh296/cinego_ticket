@@ -190,9 +190,10 @@ function RenderShowList() {
                 <td id="hall-name"></td>
                 <td id="show-start"></td>
                 <td id="show-end"></td>
-                <td> <button type="button" class="btn btn-info" id="show-edit">Edit</button> </td>
+                
             </tr>
             `)
+            //<td> <button type="button" class="btn btn-info" id="show-edit">Edit</button> </td>
 
             item.find("#show-id").text(show.showID)
             item.find("#show-name").text(show.hallName)

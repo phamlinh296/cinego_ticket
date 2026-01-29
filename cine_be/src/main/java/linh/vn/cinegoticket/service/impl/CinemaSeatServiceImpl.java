@@ -9,6 +9,7 @@ import linh.vn.cinegoticket.enums.ESeat;
 import linh.vn.cinegoticket.enums.ESeatStatus;
 import linh.vn.cinegoticket.repository.CinemaHallRepository;
 import linh.vn.cinegoticket.repository.CinemaSeatRepository;
+import linh.vn.cinegoticket.repository.ShowSeatRepository;
 import linh.vn.cinegoticket.service.CinemaSeatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class CinemaSeatServiceImpl implements CinemaSeatService {
     private CinemaSeatRepository cinemaSeatRepository;
     @Autowired
     private CinemaHallRepository cinemaHallRepository;
+    @Autowired
+    private ShowSeatRepository showSeatRepository;
 
     @Override
     public List<SeatsResponse> getAllSeatsFromHall(String hallID) {
@@ -46,6 +49,10 @@ public class CinemaSeatServiceImpl implements CinemaSeatService {
 
     @Override
     public void RemoveAllSeatsFromHall(String hallID) {
+        // 1. XÓA SHOW_SEAT TRƯỚC
+        showSeatRepository.deleteAllByHallId(hallID);
+
+        // 2. XÓA CINEMA_SEAT
         cinemaSeatRepository.deleteAllByCinemaHall_Id(hallID);
     }
 
