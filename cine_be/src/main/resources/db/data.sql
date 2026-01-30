@@ -1,0 +1,6 @@
+INSERT INTO cinego.anomaly_logs (id,amount,created_at,description,payment_id,risk_score,`type`,user_id) VALUES
+                                                                                                            ('6f6e514c-fd95-11f0-abcc-da581de1c075',120000.0,'2026-01-30 04:32:50.982675','Multiple transactions in a very short time','PAY_20260130_002',0.75,'MULTIPLE_FAST_TRANSACTION','USER_002'),
+                                                                                                            ('6f6f8701-fd95-11f0-abcc-da581de1c075',450000.0,'2026-01-30 04:34:50.982675','Transaction amount exceeds normal z-score threshold','PAY_20260130_003',0.92,'AMOUNT_ZSCORE','USER_003'),
+                                                                                                            ('6f6f8cbd-fd95-11f0-abcc-da581de1c075',180000.0,'2026-01-30 04:35:50.982675','Payment failed but user was charged','PAY_20260130_004',0.95,'FAILED_BUT_CHARGED','USER_001'),
+                                                                                                            ('6f6f8dca-fd95-11f0-abcc-da581de1c075',90000.0,'2026-01-30 04:36:50.982675','User device changed before transaction','PAY_20260130_005',0.65,'DEVICE_CHANGE','USER_004');
+
