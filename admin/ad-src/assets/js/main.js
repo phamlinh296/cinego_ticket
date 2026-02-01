@@ -21,6 +21,9 @@
       <li>
         <a href="/booking">Bookings</a>
       </li>
+      <li>
+        <a href="/anomalies">Anomaly Logs</a>
+      </li>
       <li class="header-button pr-0" id="login-btn">
           <a href="/login">Đăng nhập</a>
       </li>

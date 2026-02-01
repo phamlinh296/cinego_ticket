@@ -1,9 +1,11 @@
 package linh.vn.cinegoticket.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import linh.vn.cinegoticket.enums.AnomalyType;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -39,6 +41,7 @@ public class AnomalyLog {
     @Column(length = 1024)
     private String description;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

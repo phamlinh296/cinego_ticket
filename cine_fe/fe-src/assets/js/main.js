@@ -20,7 +20,7 @@
             <div class="footer-top">
                 <div class="logo">
                     <a href="/">
-                        <img src="assets/images/footer/footer-logo.png" alt="footer">
+                        <img src="assets/images/footer/footer-logo.png" alt="footer" width="170" height="90">
                     </a>
                 </div>
             </div>
