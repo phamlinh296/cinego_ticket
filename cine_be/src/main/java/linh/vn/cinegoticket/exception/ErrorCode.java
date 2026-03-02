@@ -15,6 +15,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),//pas đăng nhập ko khớp - k đăng nhập đc =401
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),//lỗi user không có quyền truy cap
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
+    TOO_MANY_REQUESTS(429, "Too many login attempts", HttpStatus.TOO_MANY_REQUESTS),
     ;
     private int code;
     private String message;

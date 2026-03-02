@@ -72,8 +72,11 @@ public class AuthenticationController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-        var response = authenticationService.login(request);
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request,
+                                                        HttpServletRequest httpRequest) {
+        String ipAddress = httpRequest.getRemoteAddr();
+
+        var response = authenticationService.login(request, ipAddress);
         return ResponseEntity.ok(response);
     }
 

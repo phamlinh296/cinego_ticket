@@ -76,3 +76,9 @@ jwt:
 logging:
   level:
     org.apache.kafka: ERROR
+
+rate:
+  limit:
+    login:
+      max-requests: 5
+      duration-seconds: 60

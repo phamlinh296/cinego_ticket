@@ -71,6 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private  final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final RateLimitServiceImpl rateLimitServiceImpl;
 
     @Override
     public ApiResponse signup(SignUpRequest request, String ip) {
@@ -116,7 +117,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public AuthenticationResponse login(AuthenticationRequest request) {
+    public AuthenticationResponse login(AuthenticationRequest request, String ipAddress) {
+        // RATE LIMIT CHECK trước khi authenticate
+        rateLimitServiceImpl.checkLoginRateLimit(ipAddress + ":" + request.getUsername());
+
         // Xác thực thông tin đăng nhập
         Authentication authentication =authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));

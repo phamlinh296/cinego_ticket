@@ -18,7 +18,7 @@ public interface AuthenticationService {
 //    AuthenticationResponse authenticate(AuthenticationRequest request);
 
     // Định nghĩa phương thức đăng nhập
-    AuthenticationResponse login(AuthenticationRequest request);
+    AuthenticationResponse login(AuthenticationRequest request, String ipAddress);
 
     String generateToken(User user);
 
