@@ -22,6 +22,7 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    // PRODUCER CONFIG
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -36,13 +37,19 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
+    // LISTENER FACTORY
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, PaymentEvent> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, PaymentEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+
+        // parallel processing
+        factory.setConcurrency(3);
+
         return factory;
     }
 
+    // CONSUMER CONFIG
     // cấu hình ConsumerFactory để deserialize PaymentEvent từ JSON
     //cònfig này or đã khai báo trong application.yml
     @Bean

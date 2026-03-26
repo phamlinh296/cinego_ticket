@@ -105,6 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
 //        event.setReturnCode(returnCodeFromGateway); // if available
 
         kafkaTemplate.send("payment-events", event);
+        log.info("Published payment event {}", event.getPaymentId());
     }
 
     @Override

@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +18,10 @@ public class AnomalyConsumer {
 
     private final AnomalyDetectorService anomalyService;
 
+    @RetryableTopic(
+            attempts = "3",
+            backoff = @Backoff(delay = 2000)
+    )
     @KafkaListener(
             topics = "payment-events",
             groupId = "anomaly-detector-group"
@@ -27,10 +33,8 @@ public class AnomalyConsumer {
         log.info("Received payment event: {} user: {} amount: {}",
                 event.getPaymentId(), event.getUserId(), event.getAmount());
 
-        try {
-            anomalyService.analyze(event);
-        } catch (Exception ex) {
-            log.error("Error analyzing payment event {} : {}", event.getPaymentId(), ex.getMessage(), ex);
-        }
+        anomalyService.analyze(event);
+
+        log.info("Finished analyzing payment event {}", event.getPaymentId());
     }
 }
