@@ -1,7 +1,8 @@
 package linh.vn.cinegoticket.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
-import linh.vn.cinegoticket.dto.PaymentEvent;
+import linh.vn.cinegoticket.kafka.PaymentEventPublisher;
+import linh.vn.cinegoticket.kafka.event.PaymentEvent;
 import linh.vn.cinegoticket.dto.request.HashRequest;
 import linh.vn.cinegoticket.dto.request.PaymentRequest;
 import linh.vn.cinegoticket.dto.response.ApiResponse;
@@ -27,6 +28,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -50,7 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
     private ShowSeatRepository showSeatRepository;
 
     @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    private PaymentEventPublisher paymentEventPublisher;
 
     @Override
     public PaymentResponse createPayment(String username, PaymentRequest request, String ip_addr, HttpServletRequest servletRequest) {
@@ -97,15 +99,15 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentEvent event = new PaymentEvent();
         event.setPaymentId(payment.getId());
         event.setUserId(payment.getBooking().getUser().getId());
+        event.setMovieId(String.valueOf(payment.getBooking().getShow().getMovie().getId()));
         event.setAmount(payment.getAmount());
         event.setStatus(payment.getStatus().name());
         event.setDeviceIp(ip);
-        event.setTime(new Date());
+        event.setTime(Instant.now());
         event.setLocation("VN"); // nếu mock
 //        event.setReturnCode(returnCodeFromGateway); // if available
 
-        kafkaTemplate.send("payment-events", event);
-        log.info("Published payment event {}", event.getPaymentId());
+        paymentEventPublisher.publish(event);
     }
 
     @Override

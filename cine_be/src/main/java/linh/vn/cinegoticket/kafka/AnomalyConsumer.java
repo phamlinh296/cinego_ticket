@@ -1,11 +1,10 @@
-package linh.vn.cinegoticket.config.kafka;
+package linh.vn.cinegoticket.kafka;
 
-import linh.vn.cinegoticket.dto.PaymentEvent;
+import linh.vn.cinegoticket.kafka.event.PaymentEvent;
 
 import linh.vn.cinegoticket.service.impl.AnomalyDetectorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.retry.annotation.Backoff;

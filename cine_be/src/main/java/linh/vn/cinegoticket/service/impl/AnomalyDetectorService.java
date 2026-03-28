@@ -1,19 +1,21 @@
 package linh.vn.cinegoticket.service.impl;
 
-import linh.vn.cinegoticket.dto.PaymentEvent;
+import linh.vn.cinegoticket.kafka.event.PaymentEvent;
 import linh.vn.cinegoticket.entity.AnomalyLog;
 import linh.vn.cinegoticket.enums.AnomalyType;
 import linh.vn.cinegoticket.redis.RedisPaymentHistoryService;
 import linh.vn.cinegoticket.repository.AnomalyLogRepository;
-import linh.vn.cinegoticket.service.impl.ZScoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -31,7 +33,8 @@ public class AnomalyDetectorService {
     private final double HIGH_AMOUNT_THRESHOLD = 1_000_000d;
 
     // in-memory to track recent timestamps per user (simple)
-    private final java.util.concurrent.ConcurrentMap<String, java.util.List<Long>> recentTimestamps = new java.util.concurrent.ConcurrentHashMap<>();
+//    private final java.util.concurrent.ConcurrentMap<String, java.util.List<Long>> recentTimestamps = new java.util.concurrent.ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, List<Long>> recentTimestamps = new ConcurrentHashMap<>();
     private final java.util.concurrent.ConcurrentMap<String, String> lastIp = new java.util.concurrent.ConcurrentHashMap<>();
 
     public void analyze(PaymentEvent evt) {
@@ -88,17 +91,53 @@ public class AnomalyDetectorService {
         return l;
     }
 
+//    private boolean isMultipleFast2(PaymentEvent evt) {
+//        if (evt.getUserId() == null) return false;
+//        long now = evt.getTime() != null ? evt.getTime().getTime() : System.currentTimeMillis();
+//        recentTimestamps.putIfAbsent(evt.getUserId(), new ArrayList<>());
+//        List<Long> list = recentTimestamps.get(evt.getUserId());
+//        synchronized (list) {
+//            list.add(now);
+//            // remove older than window
+//            list.removeIf(ts -> now - ts > FAST_TX_WINDOW_MS);
+//            return list.size() >= FAST_TX_COUNT;
+//        }
+//    }
+
+//    Vấn đề 1: evt.getTime().getTime() là method của java.util.Date — sau khi đổi sang Instant thì dùng .toEpochMilli().
+//    Vấn đề 2: ConcurrentHashMap + ArrayList — putIfAbsent và get là 2 thao tác riêng, có thể race condition dù đã synchronized list. Nên dùng computeIfAbsent để atomic.
+//    Vấn đề 3: recentTimestamps nên là ConcurrentHashMap với CopyOnWriteArrayList hoặc giữ synchronized — hiện tại mix không nhất quán.
+
     private boolean isMultipleFast(PaymentEvent evt) {
         if (evt.getUserId() == null) return false;
-        long now = evt.getTime() != null ? evt.getTime().getTime() : System.currentTimeMillis();
-        recentTimestamps.putIfAbsent(evt.getUserId(), new ArrayList<>());
-        List<Long> list = recentTimestamps.get(evt.getUserId());
+
+        // ✅ Instant.toEpochMilli() thay .getTime()
+        long now = evt.getTime() != null
+                ? evt.getTime().toEpochMilli()
+                : Instant.now().toEpochMilli();
+
+        // ✅ computeIfAbsent = atomic, không race condition
+        List<Long> list = recentTimestamps.computeIfAbsent(
+                evt.getUserId(), k -> new ArrayList<>()
+        );
+
         synchronized (list) {
             list.add(now);
-            // remove older than window
             list.removeIf(ts -> now - ts > FAST_TX_WINDOW_MS);
             return list.size() >= FAST_TX_COUNT;
         }
+    }
+
+    // Chạy định kỳ, ví dụ mỗi 1 giờ
+    // recentTimestamps sẽ tích userId mãi mãi. Nếu hệ thống chạy lâu, map này phình to. Nên thêm cleanup:
+    @Scheduled(fixedRate = 3_600_000)
+    public void cleanupStaleUsers() {
+        long cutoff = Instant.now().toEpochMilli() - FAST_TX_WINDOW_MS;
+        recentTimestamps.entrySet().removeIf(entry -> {
+            synchronized (entry.getValue()) {
+                return entry.getValue().stream().allMatch(ts -> ts < cutoff);
+            }
+        });
     }
 
     private boolean isDeviceChange(PaymentEvent evt) {
