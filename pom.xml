@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>linh.vn</groupId>
+    <artifactId>cinegoticket-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>cinegoticket-parent</name>
+
+    <modules>
+        <module>shared-model</module>   <!-- build trước, cine-be + spark depend vào -->
+        <module>cine-be</module>
+        <module>spark-processor</module>
+    </modules>
+
+    <!--
+        Quản lý version tập trung.
+        Các module con KHÔNG cần khai báo version cho những dependency này.
+        Chỉ cần override nếu muốn khác version.
+    -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jackson.version>2.15.4</jackson.version>
+        <lombok.version>1.18.32</lombok.version>
+        <junit.version>5.9.3</junit.version>
+        <mockito.version>5.2.0</mockito.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- shared-model: dùng chung giữa cine-be và spark-processor -->
+            <dependency>
+                <groupId>linh.vn</groupId>
+                <artifactId>shared-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Jackson (dùng chung) -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Test -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
