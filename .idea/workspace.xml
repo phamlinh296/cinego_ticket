@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="fix: save local changes before pulling">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="feature: add spark-processor prj" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -201,7 +199,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740478021398</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="feature: add spark-processor prj">
+      <option name="closed" value="true" />
+      <created>1778336770675</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1778336770675</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -209,6 +215,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="fix: save local changes before pulling" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: save local changes before pulling" />
+    <MESSAGE value="feature: add spark-processor prj" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature: add spark-processor prj" />
   </component>
 </project>
