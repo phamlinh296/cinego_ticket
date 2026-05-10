@@ -4,11 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="feature: add spark-processor prj" />
+    <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="feature: add spark-processor prj">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine-be/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine-be/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine-be/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine-be/spark-jobs/spark-processor-0.0.1-SNAPSHOT-shaded.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/controller/PaymentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/kafka/AnalyticsConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/kafka/AnalyticsConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/kafka/PaymentEventPublisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/kafka/PaymentEventPublisher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cine-be/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/src/main/resources/application.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_D:/NewVolume/Spring/1.hoidanit/cinego_ticket" value="2rfqb7FXFGlhK5hfGo1Tz5daW2v" />
+      <entry key="_D:/NewVolume/Spring/1.hoidanit/cinego_ticket/cine-be" value="3DW24XmbSqO7nwxL07sCwzWHwOL" />
+    </persistenceIdMap>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -25,11 +43,27 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;phamlinh296&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/phamlinh296/cinego_ticket.git&quot;,
+    &quot;accountId&quot;: &quot;67dc777f-3818-4886-b7c4-b7c2355a363e&quot;
+  }
+}</component>
   <component name="JpbToolWindowState">
     <option name="isToolWindowVisible" value="false" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
   </component>
   <component name="OptimizeOnSaveOptions">
     <option name="myRunOnSave" value="true" />
@@ -42,32 +76,44 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.CinegoTicketApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Laptop2Application.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.laptop2 [install].executor&quot;: &quot;Debug&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
-    &quot;Spring Boot.CinegoTicketApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/NewVolume/Spring/1.hoidanit/cinego_ticket&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.Color Scheme Font&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.CinegoTicketApplication.executor": "Run",
+    "Application.Laptop2Application.executor": "Run",
+    "Maven.laptop2 [install].executor": "Debug",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "792",
+    "RequestMappingsPanelWidth1": "792",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "Spring Boot.CinegoTicketApplication (1).executor": "Run",
+    "Spring Boot.CinegoTicketApplication.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/NewVolume/Spring/1.hoidanit/cinego_ticket",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "advanced.settings",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="linh.vn.laptop2.config" />
@@ -80,20 +126,7 @@
       <recent name="D:\NewVolume\Spring\1.hoidanit\linh\laptop2\src\main\java\linh\vn\laptop2\entity" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.CinegoTicketApplication">
-    <configuration name="CinegoTicketApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="linh.vn.cinegoticket.CinegoTicketApplication" />
-      <module name="cinegoticket" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="linh.vn.cinegoticket.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Spring Boot.CinegoTicketApplication (1)">
     <configuration name="laptop2 [install]" type="MavenRunConfiguration" factoryName="Maven" temporary="true">
       <MavenSettings>
         <option name="myGeneralSettings" />
@@ -124,17 +157,27 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
-    <configuration name="CinegoTicketApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <configuration name="CinegoTicketApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-      <module name="cinegoticket" />
+      <module name="cine-be" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="linh.vn.cinegoticket.CinegoTicketApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="linh.vn.cinegoticket.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Maven.laptop2 [install]" />
+      <item itemvalue="Spring Boot.CinegoTicketApplication (1)" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.CinegoTicketApplication" />
+        <item itemvalue="Spring Boot.CinegoTicketApplication (1)" />
         <item itemvalue="Maven.laptop2 [install]" />
       </list>
     </recent_temporary>
@@ -174,6 +217,14 @@
       <workItem from="1743002960036" duration="42000" />
       <workItem from="1762868434029" duration="23000" />
       <workItem from="1762868491399" duration="19000" />
+      <workItem from="1778340546234" duration="2328000" />
+      <workItem from="1778343170554" duration="5000" />
+      <workItem from="1778343230387" duration="737000" />
+      <workItem from="1778343980741" duration="1629000" />
+      <workItem from="1778383263935" duration="39000" />
+      <workItem from="1778383322080" duration="9006000" />
+      <workItem from="1778407882627" duration="1000" />
+      <workItem from="1778407909689" duration="6596000" />
     </task>
     <task id="LOCAL-00001" summary="fix: save local changes before pulling">
       <option name="closed" value="true" />
@@ -207,7 +258,23 @@
       <option name="project" value="LOCAL" />
       <updated>1778336770675</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="feature: add spark-processor prj">
+      <option name="closed" value="true" />
+      <created>1778336877301</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1778336877301</updated>
+    </task>
+    <task id="LOCAL-00006" summary="feature: add spark-processor prj">
+      <option name="closed" value="true" />
+      <created>1778391219242</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1778391219242</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -216,6 +283,15 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="fix: save local changes before pulling" />
     <MESSAGE value="feature: add spark-processor prj" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature: add spark-processor prj" />
+    <MESSAGE value="feature: add spark-processor jar" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature: add spark-processor jar" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

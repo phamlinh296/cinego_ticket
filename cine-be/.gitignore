@@ -3,6 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+# Chặn tất cả các file .jar ở bất kỳ đâu trong dự án
+*.jar
+# Chặn thư mục build của Spring Boot/Maven
+cine-be/target/
 
 ### STS ###
 .apt_generated
@@ -18,6 +22,7 @@ target/
 *.iws
 *.iml
 *.ipr
+.idea/
 
 ### NetBeans ###
 /nbproject/private/

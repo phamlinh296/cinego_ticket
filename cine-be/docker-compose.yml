@@ -1,22 +1,22 @@
 version: "3.8"
 
 services:
-  db:
-    container_name: linh_db
-    image: mysql:5.7
-    restart: always
-    environment:
-      MYSQL_DATABASE: linh_test_5000
-      MYSQL_USER: username
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password-admin
-    ports:
-      - "3306:3306"
-    user: "1000:1000"
-    volumes:
-      - ./my-db:/var/lib/mysql
-    networks:
-      - cine-net
+  #  db:
+  #    container_name: cine_db
+  #    image: mysql:5.7
+  #    restart: always
+  #    environment:
+  #      MYSQL_DATABASE: linh_test_5000
+  #      MYSQL_USER: username
+  #      MYSQL_PASSWORD: password
+  #      MYSQL_ROOT_PASSWORD: password-admin
+  #    ports:
+  #      - "3306:3306"
+  #    user: "1000:1000"
+  #    volumes:
+  #      - ./my-db:/var/lib/mysql
+  #    networks:
+  #      - cine-net
 
   kafka:
     image: apache/kafka:3.7.0
@@ -41,6 +41,10 @@ services:
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
       # Tạo sẵn topics khi start
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      # Cấu hình retention để tránh data loss cho Spark
+      KAFKA_LOG_RETENTION_HOURS: "24"
+      KAFKA_LOG_SEGMENT_BYTES: "1073741824"
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: "300000"
     networks:
       - cine-net
 

@@ -6,8 +6,11 @@ import linh.vn.cinegoticket.dto.request.HashRequest;
 import linh.vn.cinegoticket.dto.request.PaymentRequest;
 import linh.vn.cinegoticket.dto.response.PaymentResponse;
 import linh.vn.cinegoticket.entity.Payment;
+import linh.vn.cinegoticket.kafka.PaymentEventPublisher;
+import linh.vn.cinegoticket.kafka.event.PaymentEvent;
 import linh.vn.cinegoticket.service.EmailService;
 import linh.vn.cinegoticket.service.PaymentService;
+import java.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +24,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private PaymentEventPublisher paymentEventPublisher;
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER')")
@@ -74,6 +80,23 @@ public class PaymentController {
     public ResponseEntity<String> sendTestEmail(@RequestParam String to) {
         emailService.sendMail(to, "Test Email", "Hello! This is a test email from Spring Boot.");
         return ResponseEntity.ok("PaymentController test: Email sent to " + to);
+    }
+
+    // Test Kafka publish
+    @GetMapping("/test-kafka")
+    public ResponseEntity<String> testKafkaPublish() {
+        PaymentEvent testEvent = new PaymentEvent();
+        testEvent.setPaymentId("test-" + System.currentTimeMillis());
+        testEvent.setUserId("1");
+        testEvent.setMovieId("123");
+        testEvent.setAmount(150000.0);
+        testEvent.setStatus("PAID");
+        testEvent.setDeviceIp("127.0.0.1");
+        testEvent.setTime(Instant.now());
+        testEvent.setLocation("VN");
+        
+        paymentEventPublisher.publish(testEvent);
+        return ResponseEntity.ok("Test Kafka event published: " + testEvent.getPaymentId());
     }
 
 

@@ -9,6 +9,8 @@
 //import org.springframework.retry.annotation.Backoff;
 //import org.springframework.stereotype.Service;
 //
+//// AnalyticsConsumer is commented out because Spark jobs handle processing
+//// Spark jobs in spark-processor-0.0.1-SNAPSHOT-shaded.jar consume from Kafka directly
 //@Service
 //@RequiredArgsConstructor
 //@Slf4j
