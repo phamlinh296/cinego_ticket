@@ -4,18 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="feature: add spark-processor prj">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="d4f11976-457b-40b9-b574-93f9c799ac19" name="Changes" comment="docs: add readme, flow test">
+      <change afterPath="$PROJECT_DIR$/cine-be/KAFKA-TEST-GUIDE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cine-be/README-SETUP.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cine-be/start-infrastructure.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cine-be/start-infrastructure.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cine-be/stop-infrastructure.bat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine-be/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine-be/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine-be/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/readme.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cine-be/spark-jobs/spark-processor-0.0.1-SNAPSHOT-shaded.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/controller/PaymentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/kafka/AnalyticsConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/kafka/AnalyticsConsumer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/kafka/PaymentEventPublisher.java" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/src/main/java/linh/vn/cinegoticket/kafka/PaymentEventPublisher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cine-be/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/cine-be/src/main/resources/application.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,7 +220,7 @@
       <workItem from="1778383263935" duration="39000" />
       <workItem from="1778383322080" duration="9006000" />
       <workItem from="1778407882627" duration="1000" />
-      <workItem from="1778407909689" duration="6596000" />
+      <workItem from="1778407909689" duration="12920000" />
     </task>
     <task id="LOCAL-00001" summary="fix: save local changes before pulling">
       <option name="closed" value="true" />
@@ -274,7 +270,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778391219242</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="docs: add readme, flow test">
+      <option name="closed" value="true" />
+      <created>1778425816085</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1778425816085</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -284,7 +288,8 @@
     <MESSAGE value="fix: save local changes before pulling" />
     <MESSAGE value="feature: add spark-processor prj" />
     <MESSAGE value="feature: add spark-processor jar" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature: add spark-processor jar" />
+    <MESSAGE value="docs: add readme, flow test" />
+    <option name="LAST_COMMIT_MESSAGE" value="docs: add readme, flow test" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
