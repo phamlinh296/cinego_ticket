@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/cinegoticket/pom.xml" />
         <option value="$PROJECT_DIR$/cine-be/pom.xml" />
+        <option value="$PROJECT_DIR$/spark-processor/pom.xml" />
       </list>
     </option>
     <option name="workspaceImportForciblyTurnedOn" value="true" />

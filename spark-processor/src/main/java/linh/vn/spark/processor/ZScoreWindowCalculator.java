@@ -71,8 +71,14 @@ public class ZScoreWindowCalculator implements Serializable {
         double z = (event.getAmount() - mean) / std;
 
         if (Math.abs(z) > Z_THRESHOLD) {
-            log.warn("[ZScore] OUTLIER detected: user={} amount={} mean={:.0f} std={:.0f} z={:.2f}",
-                    event.getUserId(), event.getAmount(), mean, std, z);
+            log.warn(String.format(
+                    "[ZScore] OUTLIER detected: user=%s amount=%.0f mean=%.0f std=%.0f z=%.2f",
+                    event.getUserId(),
+                    event.getAmount(),
+                    mean,
+                    std,
+                    z
+            ));
 
             return FraudAlert.builder()
                     .paymentId(event.getPaymentId())

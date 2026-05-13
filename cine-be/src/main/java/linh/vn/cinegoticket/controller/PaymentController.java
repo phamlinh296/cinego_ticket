@@ -99,6 +99,20 @@ public class PaymentController {
         return ResponseEntity.ok("Test Kafka event published: " + testEvent.getPaymentId());
     }
 
+    // Test Kafka publish with custom body
+    @PostMapping("/test-kafka")
+    public ResponseEntity<String> testKafkaPublishWithBody(@RequestBody PaymentEvent paymentEvent) {
+        if (paymentEvent.getPaymentId() == null || paymentEvent.getPaymentId().isEmpty()) {
+            paymentEvent.setPaymentId("test-" + System.currentTimeMillis());
+        }
+        if (paymentEvent.getTime() == null) {
+            paymentEvent.setTime(Instant.now());
+        }
+        
+        paymentEventPublisher.publish(paymentEvent);
+        return ResponseEntity.ok("Test Kafka event published: " + paymentEvent.getPaymentId());
+    }
+
 
     /////////
     @GetMapping("/vnpay/return")

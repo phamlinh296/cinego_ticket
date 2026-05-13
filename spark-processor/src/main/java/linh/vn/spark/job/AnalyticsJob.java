@@ -92,9 +92,10 @@ public class AnalyticsJob {
                 .format("kafka")
                 .option("kafka.bootstrap.servers", bootstrapServers)
                 .option("subscribe", "payment-events")
-//                .option("kafka.group.id", "spark-analytics-group") // xóa vì đã set group id trong application.yml của FraudDetectionJob, nếu set ở đây sẽ override và 2 job sẽ cùng group id → không nhận full stream độc lập nữa
-                //Vì Spark Structured Streaming tự quản lý offset bằng checkpoint rồi.
-                .option("startingOffsets", "earliest")
+                // Set unique consumer group để tránh conflict với FraudDetectionJob
+                .option("kafka.group.id", "analytics-group")
+                // Dùng "latest" để tránh conflict với FraudDetectionJob dùng "earliest"
+                .option("startingOffsets", "latest")
                 .option("maxOffsetsPerTrigger", 20000)
                 .load();
 
@@ -261,6 +262,15 @@ public class AnalyticsJob {
         log.info("[AnalyticsJob] {} streaming queries running. Awaiting termination...",
                 spark.streams().active().length);
 
-        spark.streams().awaitAnyTermination();
+        // Chạy vô hạn thay vì awaitAnyTermination
+        while (true) {
+            try {
+                Thread.sleep(60000); // Sleep 1 phút
+                log.info("[AnalyticsJob] {} queries still running...", spark.streams().active().length);
+            } catch (InterruptedException e) {
+                log.info("[AnalyticsJob] Interrupted, shutting down...");
+                break;
+            }
+        }
     }
 }

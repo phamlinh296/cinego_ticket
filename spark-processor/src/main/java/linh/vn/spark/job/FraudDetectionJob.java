@@ -63,6 +63,7 @@ public class FraudDetectionJob {
         String redisHost = args.length > 3 ? args[3] : "localhost";
         int redisPort = args.length > 4 ? Integer.parseInt(args[4]) : 6379;
 
+        //Đây là log khởi động của job, Luôn có khi job start, kể cả chưa có data, In ra các parameters để debug
         log.info("Starting FraudDetectionJob | kafka={} hbase={}:{} redis={}:{}",
                 bootstrapServers, hbaseQuorum, hbasePort, redisHost, redisPort);
 
@@ -97,6 +98,8 @@ public class FraudDetectionJob {
                 .format("kafka")
                 .option("kafka.bootstrap.servers", bootstrapServers)
                 .option("subscribe", "payment-events")
+                // Set unique consumer group để tránh conflict với AnalyticsJob
+                .option("kafka.group.id", "fraud-detection-group")
                 // "earliest" để không bỏ sót message khi job restart
                 .option("startingOffsets", "earliest")
                 // Giới hạn số message mỗi trigger để tránh OOM
@@ -229,8 +232,18 @@ public class FraudDetectionJob {
                 .option("checkpointLocation", "/tmp/spark-checkpoint/fraud-detection")
                 .start();
 
-        log.info("[FraudDetectionJob] Streaming query started. Waiting for termination...");
-        query.awaitTermination();
+        log.info("[FraudDetectionJob] Streaming query started. Running indefinitely...");
+
+        // Chạy vô hạn thay vì awaitTermination
+        while (true) {
+            try {
+                Thread.sleep(60000); // Sleep 1 phút
+                log.info("[FraudDetectionJob] Fraud detection query still running...");
+            } catch (InterruptedException e) {
+                log.info("[FraudDetectionJob] Interrupted, shutting down...");
+                break;
+            }
+        }
     }
 
     /**
