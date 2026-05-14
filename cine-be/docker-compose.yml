@@ -70,26 +70,26 @@ services:
     networks:
       - cine-net
 
-  # HBase (standalone mode, embedded ZooKeeper disabled → dùng ZK trên)
+  # HBase standalone — ZK nội bộ disabled, dùng ZK container bên ngoài
+  # Fix #9/#10/#11: mount hbase-site.xml để:
+  #   - trỏ đúng ZooKeeper (fix #9)
+  #   - standalone mode (fix #10)
+  #   - advertise localhost thay vì container ID (fix #11)
   hbase:
     image: dajobe/hbase:latest
     container_name: hbase
     restart: always
     depends_on:
       - zookeeper
-    environment:
-      - HBASE_MANAGES_ZK=false
-      - HBASE_ZOOKEEPER_QUORUM=zookeeper
-      - HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT=2181
     ports:
-      - "16000:16000"   # HBase Master RPC
-      - "16010:16010"   # HBase Master Web UI  → http://localhost:16010
-      - "16020:16020"   # RegionServer RPC
-      - "16030:16030"   # RegionServer Web UI
-      - "9090:9090"     # Thrift Server (Java client dùng cổng này)
+      - "16000:16000"
+      - "16010:16010"
+      - "16020:16020"
+      - "16030:16030"
+      - "9090:9090"
     volumes:
       - ./hbase-data:/data/hbase
-      - ./hbase-init:/docker-entrypoint-initdb.d
+      - ./hbase-site.xml:/opt/hbase/conf/hbase-site.xml
     networks:
       - cine-net
 

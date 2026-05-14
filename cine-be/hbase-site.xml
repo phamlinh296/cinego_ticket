@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+  <property>
+    <name>hbase.rootdir</name>
+    <value>file:///data/hbase</value>
+  </property>
+
+  <!-- Fix #9: trỏ đúng ZooKeeper container -->
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>zookeeper</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.property.clientPort</name>
+    <value>2181</value>
+  </property>
+
+  <!-- Fix #10: standalone mode — Master + RegionServer cùng 1 process -->
+  <property>
+    <name>hbase.cluster.distributed</name>
+    <value>false</value>
+  </property>
+
+  <!-- Fix #11: advertise localhost thay vì container ID
+       Spark chạy trên Mac sẽ resolve được localhost:16020
+       thay vì UnknownHostException: <container-id>:16020 -->
+  <property>
+    <name>hbase.master.hostname</name>
+    <value>localhost</value>
+  </property>
+  <property>
+    <name>hbase.regionserver.hostname</name>
+    <value>localhost</value>
+  </property>
+</configuration>

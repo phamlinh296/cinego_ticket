@@ -68,6 +68,7 @@ public class PatternDetector implements Serializable {
         // ── Pattern 2: High frequency within window ────────────────────────────
         if (events.size() >= HIGH_FREQ_COUNT) {
             alerts.add(FraudAlert.builder()
+                    .paymentId("multi_" + userId + "_" + System.currentTimeMillis())
                     .userId(userId)
                     .alertType("HIGH_FREQUENCY_WINDOW")
                     .riskScore(0.75)
@@ -116,6 +117,9 @@ public class PatternDetector implements Serializable {
                     userId, smallTxs.size(), avgSmall, maxLarge);
 
             return FraudAlert.builder()
+                    .paymentId(largeTxs.get(0).getPaymentId() != null
+                            ? largeTxs.get(0).getPaymentId()
+                            : "smurf_" + userId + "_" + System.currentTimeMillis())
                     .userId(userId)
                     .alertType("SMURFING")
                     .riskScore(riskScore)
