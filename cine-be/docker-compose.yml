@@ -144,6 +144,31 @@ services:
     networks:
       - cine-net
 
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    restart: always
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - cine-net
+
+  redis-ui:
+    image: redislabs/redisinsight:latest
+    container_name: redis-ui
+    restart: always
+    ports:
+      - "5540:5540"
+    depends_on:
+      - redis
+    networks:
+      - cine-net
+
 networks:
   cine-net:
     driver: bridge

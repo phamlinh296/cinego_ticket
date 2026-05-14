@@ -1,0 +1,51 @@
+# ─── Maven ───────────────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.jar
+dependency-reduced-pom.xml
+mvnw
+mvnw.cmd
+**/mvnw
+**/mvnw.cmd
+
+# ─── IDE ─────────────────────────────────────────────
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+.sts4-cache
+.apt_generated
+
+# ─── OS ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Docker volumes (runtime data, không commit) ─────
+cine-be/my-db/
+cine-be/hbase-data/
+cine-be/redis-data/
+cine-be/spark-jobs/
+cine-be/hbase-init/
+
+# ─── Spark ───────────────────────────────────────────
+spark-warehouse/
+/tmp/spark-checkpoint/
+
+# ─── Secrets / env (KHÔNG BAO GIỜ commit) ────────────
+.env
+.env.local
+*.env
+application-prod.yaml
+application-secret.yaml
+
+# ─── Logs ────────────────────────────────────────────
+*.log
+logs/
