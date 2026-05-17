@@ -19,6 +19,7 @@ public class SecurityConfig {
             "/api/user/**", "/api/auth/**", "/api/movie/**", "/api/show/**", "/api/hall/**",
             "/api/payment/**", "/api/booking/**", "/api/genre/**", "/api/anomalies/**", "/api/comment/**",
             "/api/recommendations/**", "/api/recommendations",
+            "/analytics/**",
             // CÁC ĐƯỜNG DẪN SAU CHO SWAGGER
             "/v3/api-docs/**",
             "/swagger-ui/**",

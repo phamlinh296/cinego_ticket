@@ -58,6 +58,9 @@ public class HBaseSink implements Serializable {
         config.set("hbase.zookeeper.property.clientPort", zookeeperPort);
         config.set("hbase.rpc.timeout", "5000");
         config.set("hbase.client.operation.timeout", "10000");
+        config.set("hbase.client.retries.number", "3");
+        config.set("zookeeper.session.timeout", "10000");
+        config.set("zookeeper.recovery.retry", "1");
         return ConnectionFactory.createConnection(config);
     }
 
@@ -73,6 +76,7 @@ public class HBaseSink implements Serializable {
         try (Connection conn = createConnection();
              Table table = conn.getTable(TableName.valueOf(TABLE_FRAUD_LOGS))) {
 
+            List<Put> puts = new java.util.ArrayList<>();
             for (FraudAlert alert : alerts) {
                 long reverseTs = Long.MAX_VALUE - alert.getDetectedAt();
                 String rowKeyStr = alert.getUserId() + "_"
@@ -81,21 +85,22 @@ public class HBaseSink implements Serializable {
                 byte[] rowKey = Bytes.toBytes(rowKeyStr);
 
                 Put put = new Put(rowKey);
-                put.addColumn(CF, Bytes.toBytes("paymentId"), Bytes.toBytes(alert.getPaymentId()));
+                put.addColumn(CF, Bytes.toBytes("paymentId"), Bytes.toBytes(alert.getPaymentId() != null ? alert.getPaymentId() : ""));
                 put.addColumn(CF, Bytes.toBytes("userId"), Bytes.toBytes(alert.getUserId()));
                 put.addColumn(CF, Bytes.toBytes("alertType"), Bytes.toBytes(alert.getAlertType()));
                 put.addColumn(CF, Bytes.toBytes("riskScore"), Bytes.toBytes(alert.getRiskScore()));
                 put.addColumn(CF, Bytes.toBytes("amount"), Bytes.toBytes(alert.getAmount()));
-                put.addColumn(CF, Bytes.toBytes("description"), Bytes.toBytes(alert.getDescription()));
+                put.addColumn(CF, Bytes.toBytes("description"), Bytes.toBytes(alert.getDescription() != null ? alert.getDescription() : ""));
                 put.addColumn(CF, Bytes.toBytes("detectedAt"), Bytes.toBytes(alert.getDetectedAt()));
-
-                table.put(put);
+                puts.add(put);
             }
+            table.put(puts); // batch put — 1 RPC thay vì N RPC
             log.info("[HBaseSink] Wrote {} fraud alerts to HBase", alerts.size());
 
         } catch (IOException e) {
-            log.error("[HBaseSink] Failed to write fraud alerts: {}", e.getMessage(), e);
-            throw new RuntimeException("HBase write failed", e);
+            // Log và tiếp tục — fraud alert đã publish lên Kafka + Redis trước đó.
+            // HBase là audit storage, không phải primary sink, nên không kill query.
+            log.error("[HBaseSink] Failed to write fraud alerts (non-fatal): {}", e.getMessage());
         }
     }
 
@@ -129,8 +134,36 @@ public class HBaseSink implements Serializable {
                     date, movieId, revenue, txCount);
 
         } catch (IOException e) {
-            log.error("[HBaseSink] Failed to write analytics: {}", e.getMessage(), e);
-            throw new RuntimeException("HBase analytics write failed", e);
+            // Log và tiếp tục — HBase write failure không được kill streaming query.
+            // Data sẽ được ghi lại ở batch tiếp theo sau khi HBase hồi phục.
+            log.error("[HBaseSink] Failed to write analytics (non-fatal): {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Ghi PaymentEvent vào payment_history để ZScoreWindowCalculator đọc lại.
+     * Row key giống readPaymentHistory → idempotent khi sliding window ghi lặp.
+     */
+    public void writePaymentHistory(List<linh.vn.spark.model.PaymentEvent> events) {
+        if (events == null || events.isEmpty()) return;
+
+        try (Connection conn = createConnection();
+             Table table = conn.getTable(TableName.valueOf(TABLE_PAYMENT_HISTORY))) {
+
+            List<Put> puts = new java.util.ArrayList<>();
+            for (linh.vn.spark.model.PaymentEvent event : events) {
+                long time = event.getTime() != null ? event.getTime() : System.currentTimeMillis();
+                long reverseTs = Long.MAX_VALUE - time;
+                String rowKeyStr = event.getUserId() + "_" + String.format("%019d", reverseTs);
+                Put put = new Put(Bytes.toBytes(rowKeyStr));
+                put.addColumn(CF, Bytes.toBytes("amount"), Bytes.toBytes(event.getAmount()));
+                puts.add(put);
+            }
+            table.put(puts);
+            log.info("[HBaseSink] Wrote {} records to payment_history", puts.size());
+
+        } catch (IOException e) {
+            log.error("[HBaseSink] Failed to write payment_history (non-fatal): {}", e.getMessage());
         }
     }
 

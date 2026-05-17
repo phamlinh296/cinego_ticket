@@ -57,7 +57,10 @@ public class KafkaSink implements Serializable {
                     // Đảm bảo message không bị mất khi broker restart
                     props.put(ProducerConfig.ACKS_CONFIG, "all");
                     props.put(ProducerConfig.RETRIES_CONFIG, 3);
-                    props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true); // exactly-once producer
+                    props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+                    props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, "10000");
+                    props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "15000");
+                    props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, "10000");
                     producer = new KafkaProducer<>(props);
                     log.info("[KafkaSink] KafkaProducer created: {}", bootstrapServers);
                 }
@@ -95,8 +98,6 @@ public class KafkaSink implements Serializable {
                 log.error("[KafkaSink] Serialization failed for alert {}: {}", alert.getPaymentId(), e.getMessage());
             }
         }
-        // Flush để đảm bảo tất cả messages được gửi trước khi batch kết thúc
-        prod.flush();
-        log.info("[KafkaSink] Published {} fraud alerts to topic {}", alerts.size(), TOPIC_ANOMALY_EVENTS);
+        log.info("[KafkaSink] Published {} fraud alerts to topic {} (async, no flush)", alerts.size(), TOPIC_ANOMALY_EVENTS);
     }
 }

@@ -10,13 +10,13 @@ import linh.vn.cinegoticket.kafka.PaymentEventPublisher;
 import linh.vn.cinegoticket.kafka.event.PaymentEvent;
 import linh.vn.cinegoticket.service.EmailService;
 import linh.vn.cinegoticket.service.PaymentService;
-import java.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/api/payment")
@@ -88,13 +88,13 @@ public class PaymentController {
         PaymentEvent testEvent = new PaymentEvent();
         testEvent.setPaymentId("test-" + System.currentTimeMillis());
         testEvent.setUserId("1");
-        testEvent.setMovieId("123");
+        testEvent.setMovieId("1");
         testEvent.setAmount(150000.0);
         testEvent.setStatus("PAID");
         testEvent.setDeviceIp("127.0.0.1");
         testEvent.setTime(Instant.now());
         testEvent.setLocation("VN");
-        
+
         paymentEventPublisher.publish(testEvent);
         return ResponseEntity.ok("Test Kafka event published: " + testEvent.getPaymentId());
     }
@@ -108,13 +108,13 @@ public class PaymentController {
         if (paymentEvent.getTime() == null) {
             paymentEvent.setTime(Instant.now());
         }
-        
+
         paymentEventPublisher.publish(paymentEvent);
         return ResponseEntity.ok("Test Kafka event published: " + paymentEvent.getPaymentId());
     }
 
 
-    /////////
+    /// //////
     @GetMapping("/vnpay/return")
     public String vnpayReturn(HttpServletRequest request) {
         return "Thanh toan xong";

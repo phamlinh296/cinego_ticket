@@ -188,6 +188,9 @@ public class FraudDetectionJob {
                 List<Row> eventRows = row.getList(row.fieldIndex("events"));
                 List<PaymentEvent> events = rowsToPaymentEvents(userId, eventRows);
 
+                // Ghi payment history để ZScoreWindowCalculator đọc lại (idempotent với sliding window)
+                hbaseSink.writePaymentHistory(events);
+
                 // ── Pattern Detection (smurfing, high-frequency) ──────────────
                 List<FraudAlert> patternAlerts = patternDetector.detect(userId, events);
                 allAlerts.addAll(patternAlerts);
@@ -215,7 +218,12 @@ public class FraudDetectionJob {
                 hbaseSink.writeFraudAlerts(allAlerts);
 
                 // 3. Redis → dashboard counter
-                allAlerts.forEach(a -> redisSink.incrementFraudCount(today));
+                // Deduplicate theo (userId, alertType): sliding window tạo 12 overlapping
+                // windows cho cùng 1 sự kiện → chỉ đếm 1 lần per vụ fraud thực sự.
+                allAlerts.stream()
+                        .map(a -> a.getUserId() + ":" + a.getAlertType())
+                        .distinct()
+                        .forEach(key -> redisSink.incrementFraudCount(today));
 
                 log.warn("[FraudDetectionJob] Batch #{}: {} fraud alerts detected and published",
                         batchId, allAlerts.size());

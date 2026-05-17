@@ -215,7 +215,7 @@ public class AnalyticsJob {
                 .writeStream()
                 .outputMode("update")
 //                .trigger(Trigger.ProcessingTime(String.valueOf(Duration.ofMinutes(1))))
-                .trigger(Trigger.ProcessingTime("1 minute"))
+                .trigger(Trigger.ProcessingTime("30 seconds"))
                 .foreachBatch(topMoviesProcessor)
                 .option("checkpointLocation", "/tmp/spark-checkpoint/analytics-top-movies")
                 .queryName("top-movies-query")
@@ -224,35 +224,28 @@ public class AnalyticsJob {
         // ═════════════════════════════════════════════════════════════════════
         // QUERY 3: User behavior stats
         // Dashboard: avg amount per user, transaction frequency
+        //
+        // Dùng individual events (không groupBy window) vì updateUserStats
+        // thiết kế để gọi 1 lần per event (HINCRBY +1 per call).
+        // Sliding window 1h/15min sẽ gọi sink 4 lần cho 10 events → tx_count sai.
         // ═════════════════════════════════════════════════════════════════════
-        Dataset<Row> userStats = paid
-                .groupBy(
-                        col("userId"),
-                        window(col("eventTime"), "1 hour", "15 minutes")
-                )
-                .agg(
-                        avg("amount").alias("avgAmount"),
-                        count("*").alias("txCount"),
-                        sum("amount").alias("totalAmount")
-                );
+        Dataset<Row> userStats = paid.select("userId", "amount");
 
         VoidFunction2<Dataset<Row>, Long> userStatsProcessor = (batchDf, batchId) -> {
             List<Row> rows = batchDf.collectAsList();
+            log.info("[AnalyticsJob] UserStats batch #{}: {} events", batchId, rows.size());
             for (Row row : rows) {
                 String userId = row.getAs("userId");
-                double avgAmt = row.getAs("avgAmount");
-                long txCount = row.getAs("txCount");
-
-                // → Redis Hash: user stats cho dashboard
-                redisSink.updateUserStats(userId, avgAmt);
+                double amount = row.<Double>getAs("amount");
+                redisSink.updateUserStats(userId, amount);
             }
         };
 
         StreamingQuery userStatsQuery = userStats
                 .writeStream()
-                .outputMode("update")
+                .outputMode("append")
 //                .trigger(Trigger.ProcessingTime(String.valueOf(Duration.ofMinutes(2))))
-                .trigger(Trigger.ProcessingTime("2 minutes"))
+                .trigger(Trigger.ProcessingTime("30 seconds"))
                 .foreachBatch(userStatsProcessor)
                 .option("checkpointLocation", "/tmp/spark-checkpoint/analytics-user-stats")
                 .queryName("user-stats-query")

@@ -74,6 +74,8 @@ services:
   hbase:
     image: dajobe/hbase:latest
     container_name: hbase
+    #    container khác resolve được hbase qua Docker DNS → không cần fix tay /etc/hosts nữa.
+    hostname: hbase
     restart: always
     depends_on:
       - zookeeper
@@ -89,29 +91,11 @@ services:
       - "9090:9090"     # Thrift Server (Java client dùng cổng này)
     volumes:
       - ./hbase-data:/data/hbase
-      - ./hbase-init:/docker-entrypoint-initdb.d
     networks:
       - cine-net
 
-  # HBase init: tạo tables khi container start lần đầu
-  hbase-init:
-    image: dajobe/hbase:latest
-    container_name: hbase-init
-    depends_on:
-      - hbase
-    entrypoint: >
-      bash -c "
-        sleep 30 &&
-        echo \"
-          create 'payment_history', 'cf'
-          create 'fraud_logs', 'cf'
-          create 'analytics_daily', 'cf'
-          exit
-        \" | hbase shell
-      "
-    networks:
-      - cine-net
-    restart: on-failure
+  # HBase init: đã bỏ — tạo tables thủ công bằng docker exec (xem COMPLETE-TEST-GUIDE.md Bước 1)
+  # hbase-init có bug YAML folded scalar khiến lệnh tạo bảng bị lỗi parsing.
 
   # ─────────────────────────────────────────
   # Spark Master
@@ -127,6 +111,7 @@ services:
       - "7077:7077"
     volumes:
       - ./spark-jobs:/opt/spark-jobs
+      - ./spark-conf/log4j2.properties:/opt/spark/conf/log4j2.properties
     networks:
       - cine-net
 
@@ -141,6 +126,8 @@ services:
       - spark-master
     command: >
       /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    volumes:
+      - ./spark-conf/log4j2.properties:/opt/spark/conf/log4j2.properties
     networks:
       - cine-net
 
