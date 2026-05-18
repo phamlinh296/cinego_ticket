@@ -24,6 +24,9 @@
       <li>
         <a href="/anomalies">Anomaly Logs</a>
       </li>
+      <li>
+        <a href="/analytics">Analytics</a>
+      </li>
       <li class="header-button pr-0" id="login-btn">
           <a href="/login">Đăng nhập</a>
       </li>

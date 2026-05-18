@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/sweetalert2.min.css">
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <title>Analytics Dashboard - Cinego Admin</title>
+</head>
+<body>
+    <div class="preloader">
+        <div class="preloader-inner">
+            <div class="preloader-icon"><span></span><span></span></div>
+        </div>
+    </div>
+
+    <header class="header-section">
+        <div class="container">
+            <div class="header-wrapper">
+                <div class="logo">
+                    <a href="/"><img src="assets/images/logo/logo.png" alt="logo"></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="movie-section padding-top padding-bottom">
+        <div class="container">
+
+            <div class="section-header-3">
+                <h3>Analytics Dashboard</h3>
+                <p id="dashboard-date" class="text-muted"></p>
+            </div>
+
+            <div class="row mt-4">
+                <!-- Top Phim -->
+                <div class="col-md-6">
+                    <h5 class="text-warning mb-3">Top Phim Theo Doanh Thu Hôm Nay</h5>
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tên Phim</th>
+                                <th>Movie ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-movies-container">
+                            <tr><td colspan="3" class="text-center">Đang tải...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Doanh thu theo giờ -->
+                <div class="col-md-6">
+                    <h5 class="text-warning mb-3">Doanh Thu Theo Giờ Hôm Nay</h5>
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th>Khung giờ</th>
+                                <th>Doanh thu (VND)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revenue-container">
+                            <tr><td colspan="2" class="text-center">Đang tải...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="assets/js/jquery-3.3.1.min.js"></script>
+    <script src="assets/js/jquery.cookie.min.js"></script>
+    <script src="assets/js/sweetalert2.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/requestAPI.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/analytics.js"></script>
+</body>
+</html>
