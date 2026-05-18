@@ -3,12 +3,11 @@ package linh.vn.cinegoticket.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import linh.vn.cinegoticket.enums.AnomalyType;
+import linh.vn.cinegoticket.enums.DetectionSource;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "anomaly_logs", indexes = {
@@ -31,6 +30,11 @@ public class AnomalyLog {
 
     @Enumerated(EnumType.STRING)
     private AnomalyType type;
+
+    /** SPRING = rule-based real-time | SPARK = deep analysis window-based */
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(10) NOT NULL DEFAULT 'SPRING'")
+    private DetectionSource source;
 
     // composite risk score (0.0 - 1.0)
     private double riskScore;

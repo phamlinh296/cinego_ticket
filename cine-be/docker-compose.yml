@@ -41,6 +41,10 @@ services:
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
       # Tạo sẵn topics khi start
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      # Single-broker dev setup — phải set = 1, mặc định là 3 → __consumer_offsets không tạo được
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
       # Cấu hình retention để tránh data loss cho Spark
       KAFKA_LOG_RETENTION_HOURS: "24"
       KAFKA_LOG_SEGMENT_BYTES: "1073741824"

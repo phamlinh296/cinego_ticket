@@ -51,6 +51,7 @@ spring:
 
     consumer:
       group-id: anomaly-group
+      auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
@@ -72,10 +73,10 @@ jwt:
   email:
     domain: http://localhost:9595
 
-#off log kafka
 logging:
   level:
-    org.apache.kafka: ERROR
+    org.apache.kafka: WARN
+    org.springframework.kafka: WARN
 
 rate:
   limit:
