@@ -26,7 +26,7 @@ public class AnalyticsController {
 //        String key = "revenue:" + date + ":" + hour;
 
         // SAU KHI DÙNG SPARK (RedisSink dùng key khác)
-        String key = "spark:revenue:" + date + ":" + hour;
+        String key = String.format("spark:revenue:%s:%02d", date, hour);
         return redisTemplate.opsForValue().get(key);
     }
 

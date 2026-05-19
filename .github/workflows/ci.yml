@@ -32,11 +32,9 @@ jobs:
 
       - name: Grant execute permissions to mvnw
         run: chmod +x ./mvnw
-        working-directory: ./cine_be
 
       - name: Run Unit Tests with Maven Wrapper (with logs)
-        run: ./mvnw -X -e test
-        working-directory: ./cine_be
+        run: ./mvnw -X -e test -pl cine-be -am
         
       - name: Deploy to Render
         if: success() && github.ref == 'refs/heads/main'
