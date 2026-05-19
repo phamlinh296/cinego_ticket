@@ -1,5 +1,7 @@
 # CineGo Ticket Infrastructure Setup
 
+> ⚠️ **File này lỗi thời.** Dùng `FIRST-TEST-GUIDE.md` (lần đầu) hoặc `COMPLETE-TEST-GUIDE.md` (restart) thay thế. Nhiều thông tin trong file này không còn chính xác: script `start-infrastructure.bat`, `hbase-init`, Kafka topics `fraud-alerts`/`analytics-results`, và cluster mode không áp dụng cho setup hiện tại.
+
 ## Luồng hoạt động sau thanh toán
 
 1. **User thanh toán** → VNPay callback → `PaymentServiceImpl.verifyPayment()`

@@ -45,15 +45,13 @@ cd cine-be
 
 ```
 cinego_ticket/
-├── cine_be/                    # Backend Spring Boot + Kafka + Spark
-│   ├── docker-compose.yml      # All services (MySQL, Kafka, Redis, HBase, Spark)
-│   ├── start-infrastructure.bat # Windows auto-start script
-│   ├── stop-infrastructure.bat   # Windows stop script
-│   ├── spark-jobs/             # Spark JAR file
+├── cine-be/                    # Backend Spring Boot + Kafka + Spark
+│   ├── docker-compose.yml      # Infrastructure (Kafka, Redis, HBase, Spark)
+│   ├── spark-jobs/             # Spark JAR file (mount vào container)
 │   └── src/                    # Java source code
 ├── cine_fe/                    # Frontend User
 ├── admin/                      # Frontend Admin (Nginx Docker)
-└── README.md                   # File hướng dẫn này
+└── README.md                   # File hướng dẫn chính
 ```
 
 ---
@@ -64,51 +62,40 @@ cinego_ticket/
 
 #### 📦 Bước 1: Khởi động Infrastructure (BẮT BUỘC ĐẦU TIÊN)
 
-**Mở Command Prompt/PowerShell trong thư mục `cine-be`:**
+**Mở PowerShell trong thư mục `cine-be`:**
 
-```bash
-# Navigate đến thư mục cine-be
-cd D:\NewVolume\Spring\1.hoidanit\cinego_ticket\cine-be
-
-# Chạy script khởi động (Windows)
-.\start-infrastructure.bat
+```powershell
+cd cine-be
+docker compose up -d
 ```
 
-**⚠️ QUAN TRỌNG:**
-- **Command Prompt**: `start-infrastructure.bat`
-- **PowerShell**: `.\start-infrastructure.bat` (phải có `.\`)
-- **Nếu lỗi persists**: Chuột phải file → "Run as Administrator"
+Chờ HBase sẵn sàng (~30 giây), sau đó tạo 3 tables thủ công:
+```powershell
+docker exec hbase bash -c "echo \"create 'payment_history', 'cf'\" | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+docker exec hbase bash -c "echo \"create 'fraud_logs', 'cf'\" | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+docker exec hbase bash -c "echo \"create 'analytics_daily', 'cf'\" | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+```
 
-**Script này sẽ tự động làm tất cả:**
-- ✅ Start Docker containers: MySQL, Redis, Kafka, HBase, Spark Master/Worker
-- ✅ Tạo Kafka topics: `payment-events`, `fraud-alerts`, `analytics-results`
-- ✅ Khởi động Spark jobs: FraudDetectionJob, AnalyticsJob
-- ✅ Tạo HBase tables: `payment_history`, `fraud_logs`, `analytics_daily`
-
-**Đợi script chạy xong (khoảng 2-3 phút)**
+Pre-create Kafka topic `anomaly-events`:
+```powershell
+docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --topic anomaly-events --partitions 3 --replication-factor 1 --if-not-exists
+```
 
 **Verify services:**
-- **Spark UI**: http://localhost:8080 (phải thấy Spark applications đang chạy)
-- **HBase UI**: http://localhost:16010 (phải thấy tables đã tạo)
-- **Docker containers**: `docker ps` (phải thấy 7+ containers đang chạy)
+- **Spark UI**: http://localhost:8080
+- **HBase UI**: http://localhost:16010
+- **Docker containers**: `docker ps` (phải thấy 6 container: kafka, redis, zookeeper, hbase, spark-master, spark-worker)
 
 ---
 
 #### 💾 Bước 2: Thiết lập Database MySQL
 
-1. **Mở MySQL Workbench/DBeaver/DataGrip**
-2. **Kết nối tới MySQL:**
-   - Host: `localhost`
-   - Port: `3306`
-   - Username: `username`
-   - Password: `password`
-   - Database: `linh_test_5000`
+MySQL chạy ngoài Docker (không có trong docker-compose). Kết nối bằng MySQL Workbench/DBeaver:
+- Host: `localhost`, Port: `3306`
+- Username: `username`, Password: `password`
+- Database: `linh_test_5000`
 
-3. **Tạo database và insert data:**
-   ```bash
-   # Mở file data.sql và thực thi các câu lệnh
-   cine_be/src/main/resources/db/data.sql
-   ```
+Spring Boot tự chạy `db/data.sql` để seed phim và user khi start lần đầu (nếu chưa có data).
 
 ---
 
@@ -148,20 +135,15 @@ Started CinegoTicketApplication in X.XXX seconds
 
 #### 👨‍💼 Bước 5: Chạy Frontend Admin
 
-**Mở Command Prompt trong thư mục `admin`:**
+**Mở PowerShell trong thư mục `admin`:**
 
-```bash
-# Di chuyển đến thư mục admin
-cd D:\NewVolume\Spring\1.hoidanit\cinego_ticket\admin
-
-# Build Docker image
-docker build -t admin-nginx .
-
-# Run container
-docker run -d --name admin-nginx -p 80:80 -v ./ad-src:/var/www/html admin-nginx
+```powershell
+cd admin
+docker build -t cinego-admin .
+docker run -d --name cinego-admin -p 80:80 cinego-admin
 ```
 
-**Admin UI:** http://localhost
+**Admin UI:** http://localhost (analytics.html, anomalies.html, ...)
 
 **Đăng nhập admin:**
 - Username: `admin`
@@ -173,17 +155,18 @@ docker run -d --name admin-nginx -p 80:80 -v ./ad-src:/var/www/html admin-nginx
 
 Khi user thanh toán:
 
-1. **Spring Boot** nhận VNPay callback
-2. **Publish event** vào Kafka topic `payment-events`
-3. **Spark FraudDetectionJob** consume event → Phát hiện gian lận
-4. **Spark AnalyticsJob** consume event → Phân tích dữ liệu
-5. **Results** được lưu vào HBase và Redis
-6. **Admin dashboard** hiển thị analytics real-time
+1. **Spring Boot** nhận VNPay callback → cập nhật Payment thành `PAID`
+2. **Publish event** vào Kafka topic `payment-events` (3 partitions)
+3. **Spring AnomalyConsumer** (real-time, <50ms) phát hiện fraud → ghi vào MySQL `anomaly_log` với `source=SPRING`
+4. **Spark FraudDetectionJob** (deep analysis, 30s batch) → publish alert vào `anomaly-events` → HBase + Redis
+5. **SparkFraudAlertConsumer** (Spring) consume topic `anomaly-events` → ghi vào MySQL với `source=SPARK`
+6. **Spark AnalyticsJob** tổng hợp doanh thu, top movies → ghi vào Redis + HBase
+7. **Admin dashboard** đọc Redis để hiển thị analytics realtime
 
 **Monitor:**
-- **Spark Jobs**: http://localhost:8080
-- **HBase Data**: http://localhost:16010
-- **Kafka Topics**: `docker exec -it kafka bash -c "/opt/kafka/bin/kafka-topics.sh --list --bootstrap-server kafka:9092"`
+- **Spark UI**: http://localhost:8080
+- **HBase UI**: http://localhost:16010
+- **Kafka topics**: `docker exec kafka /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server kafka:9092`
 
 ---
 
@@ -198,13 +181,6 @@ docker --version
 docker ps
 ```
 
-### 🔴 Script start-infrastructure.bat lỗi
-- **Nguyên nhân**: Docker Desktop chưa start, port bị chiếm, hoặc PowerShell security policy
-- **Fix**: 
-  1. Mở Docker Desktop, đợi 30 giây
-  2. Dùng `.\start-infrastructure.bat` cho PowerShell
-  3. Chuột phải file → "Run as Administrator"
-
 ### 🔴 Spring Boot không kết nối được Kafka
 - **Nguyên nhân**: Chạy Spring Boot TRƯỚC khi start infrastructure
 - **Fix**: Dừng Spring Boot, chạy `start-infrastructure.bat` trước
@@ -215,60 +191,43 @@ docker ps
 
 ---
 
-## 📋 7. QUẢN LÝ CONTAINER (QUAN TRỌNG)
+## 📋 7. QUẢN LÝ CONTAINER
 
-### 🆕 **Lần đầu chạy - Chưa có container nào**
-```bash
-# Script sẽ tự động tạo tất cả containers
-.\start-infrastructure.bat
+### 🆕 **Lần đầu chạy — Chưa có container**
+```powershell
+cd cine-be
+docker compose up -d
+# Sau đó tạo HBase tables và anomaly-events topic (xem Bước 1)
 ```
-**Kết quả:** Tạo mới 7 containers (MySQL, Redis, Kafka, Zookeeper, HBase, Spark Master, Spark Worker)
 
-### 🔄 **Đã có container rồi - Chỉ start lên**
-```bash
-# Script sẽ tự động nhận biết và chỉ start containers có sẵn
-.\start-infrastructure.bat
+### 🔄 **Restart lại — Đã có container từ trước**
+```powershell
+cd cine-be
+docker compose up -d
+# HBase tables và Redis data giữ nguyên trong ./hbase-data và ./redis-data
 ```
-**Kết quả:** Start lại 7 containers đã có, không tạo lại
 
 ### 🛑 **Dừng tất cả containers**
-```bash
-# Dừng containers nhưng giữ lại để dùng lần sau
-docker-compose stop
-
-# Hoặc dừng và xóa hoàn toàn
-docker-compose down -v
-```
-
-### 🔧 **Xử lý lỗi container conflict**
-Nếu bị lỗi "container name already in use":
-```bash
-# Cách 1: Dừng và xóa containers
-docker-compose down -v
-
-# Cách 2: Xóa container cụ thể
-docker rm -f linh_db redis kafka zookeeper hbase spark-master spark-worker
-
-# Sau đó chạy lại:
-.\start-infrastructure.bat
+```powershell
+docker compose stop   # dừng, giữ data
+docker compose down   # dừng + xóa container (data trong volumes vẫn còn)
 ```
 
 ### 🔴 Port 80 bị chiếm (Skype, IIS, XAMPP)
-```bash
+```powershell
 # Tìm process chiếm port 80
 netstat -ano | findstr :80
-
 # Kill process
 taskkill /PID <PID> /F
 ```
 
 ### 🔴 Spark jobs không chạy
-```bash
+```powershell
 # Check Spark Master status
 docker logs spark-master
 
-# Restart Spark jobs
-docker exec -it spark-master bash -c "spark-submit --master spark://spark-master:7077 --class linh.vn.spark.job.FraudDetectionJob /opt/spark-jobs/spark-processor-0.0.1-SNAPSHOT-shaded.jar kafka:9092 hbase 2181 redis 6379"
+# Submit lại Spark job (xem COMPLETE-TEST-GUIDE.md Bước 3-4)
+docker exec spark-master /opt/spark/bin/spark-submit --deploy-mode client --master spark://spark-master:7077 --conf spark.cores.max=4 --class linh.vn.spark.job.FraudDetectionJob /opt/spark-jobs/spark-processor-0.0.1-SNAPSHOT-shaded.jar kafka:9092 hbase 2181 redis 6379
 ```
 
 ---
@@ -277,45 +236,42 @@ docker exec -it spark-master bash -c "spark-submit --master spark://spark-master
 
 Khi làm xong, dừng tất cả services:
 
-```bash
+```powershell
 # Trong thư mục cine-be
-stop-infrastructure.bat
+docker compose stop
 
 # Dừng admin container
-docker stop admin-nginx
-docker rm admin-nginx
+docker stop cinego-admin
+docker rm cinego-admin
 ```
 
 ---
 
 ## 📝 9. TỔNG KẾT CÁC BƯỚC (QUICK REFERENCE)
 
-```bash
-# 1. Clone project
-git clone <repository-url>
-cd cinego_ticket/cine-be
+Xem hướng dẫn đầy đủ:
+- **Lần đầu:** `FIRST-TEST-GUIDE.md`
+- **Restart lại:** `COMPLETE-TEST-GUIDE.md`
 
-# 2. Start infrastructure (QUAN TRỌNG NHẤT)
-.\start-infrastructure.bat  # PowerShell
-# hoặc
-start-infrastructure.bat     # Command Prompt
+```powershell
+# 1. Start infrastructure (từ thư mục cine-be)
+docker compose up -d
+# Tạo HBase tables + anomaly-events topic (xem FIRST-TEST-GUIDE.md Bước 1)
 
-# 3. Setup MySQL database
-# - Connect: localhost:3306, username/password
-# - Run: src/main/resources/db/data.sql
+# 2. Start Spring Boot (từ root project)
+./mvnw spring-boot:run -pl cine-be
 
-# 4. Start Spring Boot (IntelliJ IDEA)
-# - Open project cine-be
-# - Run: CinegoTicketApplication.java
+# 3. Submit Spark jobs (terminal riêng)
+docker exec spark-master /opt/spark/bin/spark-submit --deploy-mode client --master spark://spark-master:7077 --conf spark.cores.max=4 --class linh.vn.spark.job.FraudDetectionJob /opt/spark-jobs/spark-processor-0.0.1-SNAPSHOT-shaded.jar kafka:9092 hbase 2181 redis 6379
+docker exec spark-master /opt/spark/bin/spark-submit --deploy-mode client --master spark://spark-master:7077 --conf spark.cores.max=4 --class linh.vn.spark.job.AnalyticsJob /opt/spark-jobs/spark-processor-0.0.1-SNAPSHOT-shaded.jar kafka:9092 hbase 2181 redis 6379
 
-# 5. Start Frontend User (VS Code)
-# - Open cine_fe folder
-# - Right-click index.html → Open with Live Server
+# 4. Start Frontend User (VS Code)
+# - Open cine_fe/ → Right-click index.html → Open with Live Server
 
-# 6. Start Frontend Admin
+# 5. Start Frontend Admin
 cd ../admin
-docker build -t admin-nginx .
-docker run -d --name admin-nginx -p 80:80 -v ./ad-src:/var/www/html admin-nginx
+docker build -t cinego-admin .
+docker run -d --name cinego-admin -p 80:80 cinego-admin
 ```
 
 ---
@@ -371,12 +327,12 @@ docker exec -it hbase bash -c "echo 'list' | hbase shell"
 - **Revenue Analytics**: Dữ liệu doanh thu theo thời gian
 
 ### 📡 Kafka Topics Monitoring
-```bash
-# Check Kafka messages
-docker exec -it kafka bash -c "/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic payment-events --from-beginning"
+```powershell
+# List all topics (phải thấy: payment-events, anomaly-events)
+docker exec kafka /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server kafka:9092
 
-# List all topics
-docker exec -it kafka bash -c "/opt/kafka/bin/kafka-topics.sh --list --bootstrap-server kafka:9092"
+# Check messages trong payment-events
+docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic payment-events --from-beginning --max-messages 5
 ```
 
 ---

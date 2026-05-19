@@ -411,7 +411,7 @@ ROW                         COLUMN+CELL
 Row key pattern: `{date}___ALL__` = aggregate toàn bộ revenue (từ Query 1 — Revenue); `{date}_{movieId}` = per-movie (từ Query 2 — Top movies). Giá trị numeric hiển thị dạng binary bytes — bình thường, HBase lưu kiểu binary.
 
 ```powershell
-# payment_history — luôn rỗng (missing feature, xem BƯỚC 7.2)
+# payment_history — FraudDetectionJob ghi mỗi event vào đây (dùng cho Z-Score deep analysis)
 docker exec -e "HCMD=scan 'payment_history', {LIMIT => 5}" hbase bash -c 'echo "$HCMD" | /opt/hbase/bin/hbase shell -n 2>/dev/null'
 ```
 

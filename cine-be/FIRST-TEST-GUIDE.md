@@ -21,15 +21,12 @@ cd cine-be
 docker compose up -d
 ```
 
-Docker sẽ pull images và khởi động theo đúng thứ tự (`depends_on`):
-`zookeeper` → `hbase` → `hbase-init` (tạo tables), `kafka`, `redis`, `spark-master` → `spark-worker`.
-
-Chờ khoảng **40-60 giây** để `hbase-init` tạo xong 3 tables. Kiểm tra:
+Docker sẽ pull images và khởi động 6 container theo thứ tự `depends_on`. Kiểm tra:
 ```powershell
 docker ps --format "table {{.Names}}\t{{.Status}}"
 ```
 
-Expected:
+Expected — phải thấy đủ 6 container:
 ```
 NAMES          STATUS
 kafka          Up X seconds
@@ -38,10 +35,25 @@ zookeeper      Up X seconds
 hbase          Up X seconds
 spark-master   Up X seconds
 spark-worker   Up X seconds
-hbase-init     Exited (0)     ← bình thường, đã tạo xong tables
 ```
 
-Xác nhận 3 tables HBase đã được tạo:
+Chờ HBase sẵn sàng (~30s) — chạy lại cho đến khi thấy `1 servers, 0 dead`:
+```powershell
+docker exec hbase bash -c "echo 'status' | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+```
+
+Expected: `1 active master, 0 backup masters, 1 servers, 0 dead, 2.0000 average load`
+
+Tạo 3 HBase tables thủ công (HBase không tự tạo):
+```powershell
+docker exec hbase bash -c "echo \"create 'payment_history', 'cf'\" | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+docker exec hbase bash -c "echo \"create 'fraud_logs', 'cf'\" | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+docker exec hbase bash -c "echo \"create 'analytics_daily', 'cf'\" | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+```
+
+Expected mỗi lệnh: `Created table X`
+
+Xác nhận 3 tables đã tạo:
 ```powershell
 docker exec hbase bash -c "echo 'list' | /opt/hbase/bin/hbase shell -n 2>/dev/null"
 ```
@@ -55,12 +67,12 @@ payment_history
 3 row(s)
 ```
 
-Nếu chưa thấy 3 tables (hbase-init chưa xong): chờ thêm 30 giây rồi chạy lại lệnh trên.
-
-Fix hostname HBase để lệnh `count` hoạt động:
+Pre-create Kafka topic `anomaly-events` (FraudDetectionJob publish fraud alerts vào đây — **bắt buộc** trước khi submit job):
 ```powershell
-docker exec hbase bash -c "echo ""127.0.0.1 $(docker exec hbase hostname)"" >> /etc/hosts"
+docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --topic anomaly-events --partitions 3 --replication-factor 1 --if-not-exists
 ```
+
+Expected: `Created topic anomaly-events.`
 
 ---
 
@@ -215,31 +227,28 @@ docker exec hbase bash -c "echo 'list' | /opt/hbase/bin/hbase shell -n 2>/dev/nu
 
 Expected: thấy `analytics_daily`, `fraud_logs`, `payment_history`.
 
-### payment_history — FraudDetectionJob ghi sau mỗi event
+### payment_history — FraudDetectionJob ghi trước pattern detection
 ```powershell
-docker exec hbase bash -c "echo 'count ""payment_history""' | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+'count "payment_history"' | docker exec -i hbase /opt/hbase/bin/hbase shell
 ```
 
-Expected sau khi gửi 5 events:
-```
-5 row(s)
-```
+Expected sau khi gửi 5 events: số row > 0 và tăng dần theo số event gửi.
 
 ### analytics_daily — AnalyticsJob ghi tổng hợp theo ngày/movie
 ```powershell
-docker exec hbase bash -c "echo 'count ""analytics_daily""' | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+'count "analytics_daily"' | docker exec -i hbase /opt/hbase/bin/hbase shell
 ```
 
-Expected: số row = số cặp `(date, movieId)` độc nhất (với 5 events cùng movieId=123 trong ngày → 1 row).
+Expected: số row = số cặp `(date, movieId)` độc nhất (với 5 events cùng movieId=123 trong ngày → 2 row: `{date}___ALL__` + `{date}_123`).
 
 ### fraud_logs — FraudDetectionJob ghi khi phát hiện fraud
 ```powershell
-docker exec hbase bash -c "echo 'count ""fraud_logs""' | /opt/hbase/bin/hbase shell -n 2>/dev/null"
+'count "fraud_logs"' | docker exec -i hbase /opt/hbase/bin/hbase shell
 ```
 
-Expected khi test bình thường: `0 row(s)`.
+Expected khi gửi test event bình thường: `0 row(s)`. Tăng lên khi gửi 10+ events nhanh liên tiếp.
 
-Nếu lệnh count báo lỗi `UnknownHostException`: chạy lại lệnh fix hostname ở cuối Bước 1 rồi thử lại.
+Nếu count báo `UnknownHostException`: restart zookeeper + hbase rồi tạo lại tables (xem Bước 1).
 
 ---
 
@@ -257,15 +266,16 @@ HBase UI: `http://localhost:16010` — thấy 3 tables trong Tables tab.
 
 ## CHECKLIST XÁC NHẬN THÀNH CÔNG
 
-- [ ] `docker ps` thấy đủ 6 container Up
-- [ ] `list` trong HBase shell thấy 3 tables
+- [ ] `docker ps` thấy đủ 6 container Up (kafka, redis, zookeeper, hbase, spark-master, spark-worker)
+- [ ] HBase shell `list` thấy 3 tables (analytics_daily, fraud_logs, payment_history)
+- [ ] Kafka topic `anomaly-events` đã được tạo
 - [ ] Spring Boot log `Started CinegoTicketApplication on port 9595`
 - [ ] FraudDetectionJob log `idle and waiting for new data`
 - [ ] AnalyticsJob log `3 queries still running`
 - [ ] `curl test-kafka` trả về `Test Kafka event published`
 - [ ] Redis `spark:user_stats:1` có `tx_count` = số event đã gửi
 - [ ] Redis `spark:top_movies:{ngày hôm nay}` có movieId 123
-- [ ] HBase `payment_history` count = số event đã gửi
+- [ ] HBase `payment_history` count > 0 sau khi gửi events
 - [ ] Spark UI `http://localhost:8080` thấy 2 Running Applications
 
 ---
@@ -273,7 +283,10 @@ HBase UI: `http://localhost:16010` — thấy 3 tables trong Tables tab.
 ## XỬ LÝ SỰ CỐ THƯỜNG GẶP
 
 **HBase tables chưa có sau khi `docker compose up -d`:**
-`hbase-init` cần 30-60 giây để chạy xong. Kiểm tra log: `docker logs hbase-init`. Nếu bị lỗi thì chạy lại: `docker compose up hbase-init`.
+Chờ HBase ready (~30 giây) rồi tạo thủ công (xem lệnh Bước 1). Kiểm tra HBase sẵn sàng: `docker exec hbase bash -c "echo 'status' | /opt/hbase/bin/hbase shell -n 2>/dev/null"`. Phải thấy `1 servers, 0 dead`.
+
+**HBase bị stuck — log "Master startup cannot progress":**
+ZooKeeper giữ stale data. Fix: `docker compose restart zookeeper` → `docker compose restart hbase` → chờ ~30s → tạo lại tables.
 
 **Spring Boot không kết nối được Kafka:**
 Kafka khởi động mất ~15 giây. Nếu Spring Boot start trước Kafka thì sẽ retry tự động. Chờ thêm, không cần restart.
@@ -282,4 +295,7 @@ Kafka khởi động mất ~15 giây. Nếu Spring Boot start trước Kafka th�
 Đường dẫn JAR trong container là `/opt/spark-jobs/spark-processor-0.0.1-SNAPSHOT-shaded.jar`. Kiểm tra: `docker exec spark-master ls /opt/spark-jobs/`. JAR được mount qua volume `./spark-jobs` trong `docker-compose.yml`.
 
 **`count` HBase báo `UnknownHostException`:**
-Chạy fix hostname: `docker exec hbase bash -c "echo ""127.0.0.1 $(docker exec hbase hostname)"" >> /etc/hosts"` rồi thử lại.
+hbase-data có data cũ từ hostname khác. Fix: `docker compose restart zookeeper` → `docker compose restart hbase` → chờ ready → tạo lại tables (Bước 1).
+
+**FraudDetectionJob không xử lý, Redis/HBase không cập nhật:**
+Có thể thiếu topic `anomaly-events` → KafkaSink bị block. Chạy lại lệnh tạo topic ở cuối Bước 1 với `--if-not-exists`.
