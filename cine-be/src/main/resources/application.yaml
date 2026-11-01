@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: cinegoticket
+  config:
+    import: classpath:application-health.yaml
 
   jpa:
     hibernate:
@@ -19,14 +21,14 @@ spring:
     url: ${DATABASE_URL:jdbc:mysql://localhost:3306/cinego}
     #    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/abc}
     username: ${DATABASE_USERNAME:username}
-    password: ${DATABASE_PASSWORD:password}
+    password: ${DATABASE_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME:phamylinh.kc@gmail.com}
-    password: ${MAIL_PASSWORD:jemzkvxfvrdjlcqk}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -43,7 +45,7 @@ spring:
       timeout: 30s
 
   kafka:
-    bootstrap-servers: localhost:29092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -64,14 +66,14 @@ spring:
       missing-topics-fatal: false
 
 app:
-  default_sender: ${MAIL_SENDER:phamylinh.kc@gmail.com}
+  default_sender: ${MAIL_SENDER:}
 
 jwt:
-  signerKey: ${JWT_SECRET:sEzN49A5eMzybTam7Km8m5KHpF36Vp+YnVZ/B5VaVsUrHvgDBvnIEy/MznZGVl+5}
+  signerKey: ${JWT_SECRET}
   valid-duration: 18000
   refreshable-duration: 18000
   email:
-    domain: http://localhost:9595
+    domain: ${APP_PUBLIC_URL:http://localhost:9595}
 
 logging:
   level:
@@ -86,5 +88,5 @@ rate:
 
 hbase:
   zookeeper:
-    quorum: localhost
-    port: 2181
+    quorum: ${HBASE_ZOOKEEPER_QUORUM:localhost}
+    port: ${HBASE_ZOOKEEPER_PORT:2181}

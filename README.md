@@ -6,6 +6,15 @@
 
 Hệ thống đặt vé xem phim trực tuyến theo kiến trúc **event-driven**, tích hợp **phát hiện gian lận realtime** và **phân tích doanh thu** bằng Apache Spark Streaming.
 
+## AI workflow và CI/CD backend
+
+Đã chuẩn bị source AI review PR, CI test/MySQL, GHCR → Render staging → production approval và rollback.
+Các cờ AI/release mặc định tắt; chưa có bằng chứng AI/deploy thật hoặc adoption toàn công ty.
+
+- [Trạng thái và evidence local](cine-be/docs/DELIVERY-STATUS.md)
+- [AI workflow và hướng dẫn chia sẻ](cine-be/docs/AI-WORKFLOWS.md)
+- [Runbook cấu hình, release và rollback](cine-be/docs/RELEASE-RUNBOOK.md)
+
 Swagger API: [https://cinego-ticket.onrender.com/swagger-ui/index.html](https://cinego-ticket.onrender.com/swagger-ui/index.html)
 
 <p align="center">

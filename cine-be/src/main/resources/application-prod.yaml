@@ -1,0 +1,44 @@
+# No schema mutation. Provision/migrate the database separately before release.
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        generate_statistics: false
+  sql:
+    init:
+      mode: never
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      connection-timeout: 3000
+      validation-timeout: 1000
+  mail:
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      password: ${REDIS_PASSWORD}
+      connect-timeout: 2s
+      timeout: 2s
+      ssl:
+        enabled: ${REDIS_SSL_ENABLED:true}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+jwt:
+  signerKey: ${JWT_SECRET}
+  email:
+    domain: ${APP_PUBLIC_URL}
+
+app:
+  default_sender: ${MAIL_SENDER}
+
+hbase:
+  zookeeper:
+    quorum: ${HBASE_ZOOKEEPER_QUORUM}

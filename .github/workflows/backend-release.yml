@@ -1,0 +1,142 @@
+name: Backend release (same digest)
+on:
+  workflow_call:
+    inputs:
+      commit_sha:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: cinego-release
+  cancel-in-progress: false
+jobs:
+  preflight:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.CINEGO_RELEASE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      image: ${{ steps.guard.outputs.image }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ inputs.commit_sha }}
+          persist-credentials: false
+      - name: Require current main, distinct services and production reviewers
+        id: guard
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          RELEASE_SHA: ${{ inputs.commit_sha }}
+          STAGING_SERVICE: ${{ vars.RENDER_STAGING_SERVICE_ID }}
+          PRODUCTION_SERVICE: ${{ vars.RENDER_PRODUCTION_SERVICE_ID }}
+        with:
+          script: |
+            await require('./cine-be/automation/release-guards.cjs').preflight(
+              {github, context, core}, process.env.RELEASE_SHA, process.env.STAGING_SERVICE, process.env.PRODUCTION_SERVICE);
+  publish:
+    needs: preflight
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    timeout-minutes: 30
+    outputs:
+      image_ref: ${{ steps.image.outputs.ref }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ inputs.commit_sha }}
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and publish one release artifact
+        id: build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: ./cine-be/Dockerfile.production
+          push: true
+          tags: ${{ needs.preflight.outputs.image }}:${{ inputs.commit_sha }}
+          labels: org.opencontainers.image.revision=${{ inputs.commit_sha }}
+          provenance: mode=max
+          sbom: true
+      - name: Record immutable image reference
+        id: image
+        env:
+          IMAGE: ${{ needs.preflight.outputs.image }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          if [[ ! "$DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]; then exit 1; fi
+          echo "ref=$IMAGE@$DIGEST" >> "$GITHUB_OUTPUT"
+  staging:
+    needs: [preflight, publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: staging
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ inputs.commit_sha }}
+          persist-credentials: false
+      - name: Deploy staging and verify resolved digest/readiness
+        env:
+          IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
+          EXPECTED_IMAGE_REPOSITORY: ${{ needs.preflight.outputs.image }}
+          RENDER_SERVICE_ID: ${{ vars.RENDER_STAGING_SERVICE_ID }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+        run: python3 cine-be/automation/render_deploy.py --execute --result-file staging-release.json
+      - name: Preserve staging release/rollback evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: staging-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: staging-release.json
+          retention-days: 90
+          if-no-files-found: warn
+  production:
+    needs: [preflight, publish, staging]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ inputs.commit_sha }}
+          persist-credentials: false
+      - name: Recheck main and protection after approval
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          RELEASE_SHA: ${{ inputs.commit_sha }}
+          STAGING_SERVICE: ${{ vars.RENDER_STAGING_SERVICE_ID }}
+          PRODUCTION_SERVICE: ${{ vars.RENDER_PRODUCTION_SERVICE_ID }}
+        with:
+          script: |
+            await require('./cine-be/automation/release-guards.cjs').preflight(
+              {github, context, core}, process.env.RELEASE_SHA, process.env.STAGING_SERVICE, process.env.PRODUCTION_SERVICE);
+      - name: Promote exact staging digest
+        env:
+          IMAGE_REF: ${{ needs.publish.outputs.image_ref }}
+          EXPECTED_IMAGE_REPOSITORY: ${{ needs.preflight.outputs.image }}
+          RENDER_SERVICE_ID: ${{ vars.RENDER_PRODUCTION_SERVICE_ID }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+        run: python3 cine-be/automation/render_deploy.py --execute --result-file production-release.json
+      - name: Preserve production release/rollback evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: production-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: production-release.json
+          retention-days: 90
+          if-no-files-found: warn

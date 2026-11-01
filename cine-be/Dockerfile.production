@@ -1,0 +1,27 @@
+# Build context: cinego_ticket (the Git repository root).
+FROM eclipse-temurin:21-jdk-jammy@sha256:4b1a74fbffbe6b4e7b6f0171a472478282fb463790a51edf10e465d578f22b69 AS build
+WORKDIR /workspace
+
+# Maven discovers every reactor POM, even when only cine-be and its prerequisites
+# are selected. Spark source is intentionally not included or compiled.
+COPY mvnw pom.xml ./
+COPY .mvn/ .mvn/
+COPY shared-model/pom.xml shared-model/pom.xml
+COPY cine-be/pom.xml cine-be/pom.xml
+COPY spark-processor/pom.xml spark-processor/pom.xml
+COPY shared-model/src/ shared-model/src/
+COPY cine-be/src/ cine-be/src/
+# The Windows working tree can contain CRLF in the shell wrapper.
+RUN --mount=type=cache,target=/root/.m2 \
+    sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw \
+    && ./mvnw -B -ntp -pl cine-be -am package -Dmaven.test.skip=true
+
+FROM eclipse-temurin:21-jre-jammy@sha256:1eac8b8fee11ca7d6725a48bc5d41992ed1561504ebae25490d2d062847e8269 AS runtime
+WORKDIR /app
+RUN groupadd --system app && useradd --system --gid app --home /app app
+COPY --from=build --chown=app:app /workspace/cine-be/target/cine-be-*.jar /app/app.jar
+USER app
+EXPOSE 9595
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0"
+ENV SPRING_PROFILES_ACTIVE=prod
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
