@@ -46,6 +46,9 @@ riêng trong PR; không dùng kết quả run cũ để khẳng định mọi co
 
 - Maven reactor: **BUILD SUCCESS**.
 - Docker image `cinego-be:ci`: build thành công, user `app`, UID `999`.
+- Sau khi thêm OCI source label, đã build lại với `--platform linux/amd64` và
+  inspect xác nhận platform `linux/amd64`, user `app`, label source đúng repo.
+  Kiểm tra 22 link nội bộ trong 7 file tài liệu đều hợp lệ.
 - `actionlint 1.7.12`: cả 5 active workflows pass; đã kiểm checksum binary.
 - `git diff --check`: không có lỗi whitespace; Git có warning CRLF của working tree Windows.
 - Lần đầu test health fail do mock HealthIndicator không thực thi default method
@@ -125,6 +128,13 @@ giá trị secret, không ghi settings và không gọi OpenAI/Render API.
 Không thể tạo key OpenAI, chọn budget, xác định Render service hoặc reviewer thay
 chủ tài khoản từ source code. [AI-WORKFLOWS.md](AI-WORKFLOWS.md) và
 [RELEASE-RUNBOOK.md](RELEASE-RUNBOOK.md) ghi thứ tự bootstrap và tên cấu hình.
+
+Chủ repo xác nhận chưa có OpenAI key và hai Render services. Đã bổ sung
+[SETUP-GUIDE.md](SETUP-GUIDE.md) với trang cấu hình, thứ tự AI pilot trước Render,
+tên biến, hạ tầng runtime và các bước có chi phí. Đã thêm OCI source label vào
+Dockerfile để liên kết package GHCR khi bootstrap; cần kiểm chứng publish thật
+sau khi được duyệt. Runbook cũng làm rõ deploy lúc tạo service và cách nhả
+concurrency group trước diễn tập rollback staging khi chờ production approval.
 
 Readiness hiện chưa bao phủ đầy đủ Kafka/HBase/payment. Phân quyền nghiệp vụ,
 SAST/dependency scanning, provenance kiểm chứng, migration/backup, alerting và

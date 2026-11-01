@@ -7,6 +7,9 @@ Chưa có bằng chứng áp dụng trong nhóm/bộ phận/công ty. Đây là 
 production-inspired để pilot; [DELIVERY-STATUS.md](DELIVERY-STATUS.md) ghi run và
 cấu hình tài khoản còn thiếu đã kiểm tra thực tế.
 
+Chưa có OpenAI key hoặc Render services: làm theo
+[SETUP-GUIDE.md](SETUP-GUIDE.md), bắt đầu AI pilot trước phần deployment.
+
 ## Workflow có sẵn
 
 | Công việc | Cách dùng | Đầu ra | Quyền quyết định |

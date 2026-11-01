@@ -15,6 +15,7 @@ Các cờ AI/release mặc định tắt; chưa có bằng chứng AI/deploy th�
 - [PR minh chứng #2](https://github.com/phamlinh296/cinego_ticket/pull/2): [CI pass](https://github.com/phamlinh296/cinego_ticket/actions/runs/41340915843), 49 test pass và Docker build pass.
 - [AI workflow và hướng dẫn chia sẻ](cine-be/docs/AI-WORKFLOWS.md)
 - [Runbook cấu hình, release và rollback](cine-be/docs/RELEASE-RUNBOOK.md)
+- [Thiết lập OpenAI/GitHub/Render từ đầu](cine-be/docs/SETUP-GUIDE.md)
 
 Swagger API: [https://cinego-ticket.onrender.com/swagger-ui/index.html](https://cinego-ticket.onrender.com/swagger-ui/index.html)
 

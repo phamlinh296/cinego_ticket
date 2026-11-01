@@ -3,6 +3,9 @@
 Source đã được chuẩn bị; chưa publish GHCR, gọi Render API, tạo service, cấu hình
 GitHub settings hay deploy thật. Không dùng tài liệu này như bằng chứng production.
 
+Nếu chưa có tài khoản/key/services, bắt đầu từ
+[SETUP-GUIDE.md](SETUP-GUIDE.md) để làm lần lượt AI pilot rồi hạ tầng Render.
+
 ## Luồng và cổng kiểm soát
 
 ```mermaid
@@ -59,7 +62,8 @@ bỏ kiểm tra để gọi luồng này là production gate. Quyền đọc env
 4. Sau khi được phép publish bootstrap artifact: test/build source main, đăng
    nhập GHCR trong terminal bằng credential của chủ repo, tag/push image đầu tiên
    theo các lệnh dưới. Bước này chưa được thực thi trong phiên làm việc.
-5. Tạo hai Render image-backed web services từ image bootstrap. Tắt auto-deploy,
+5. Tạo staging image-backed service trước; production chỉ bootstrap sau khi
+   staging đã smoke và chủ repo duyệt, dùng cùng digest. Xác minh auto-deploy=no,
    đặt health check `/actuator/health/readiness`, cấu hình registry pull access.
 6. Đặt runtime env theo `.env.example`, GitHub environments/secrets/variables và
    required reviewers. Không dùng cùng service ID hoặc DB cho staging/production.
@@ -70,11 +74,22 @@ Ví dụ bootstrap cho chủ repo thực hiện SAU khi được duyệt publish
 
 ```sh
 ./mvnw -B -ntp -pl cine-be -am verify
-docker build -f cine-be/Dockerfile.production -t cinego-be:bootstrap .
+docker build --platform linux/amd64 -f cine-be/Dockerfile.production -t cinego-be:bootstrap .
 # docker login ghcr.io trong terminal; không ghi token vào command/file source
 docker tag cinego-be:bootstrap ghcr.io/phamlinh296/cinego-be:bootstrap
 docker push ghcr.io/phamlinh296/cinego-be:bootstrap
 ```
+
+Dockerfile gắn `org.opencontainers.image.source` để liên kết GHCR package với repo.
+Sau lần push thủ công, kiểm tra package đã liên kết và cấp Actions access cho repo;
+package tạo sẵn nhưng chưa liên kết có thể từ chối `GITHUB_TOKEN` publish về sau.
+Package mới mặc định private, Render cần credential pull hoặc quyết định public
+artifact được duyệt. Xem [GitHub GHCR Docs](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
+
+Tạo Render service từ image sẽ khởi động deploy ban đầu. Bootstrap staging trước;
+production chỉ tạo khi được duyệt, dùng cùng digest staging đã smoke thành công.
+Deploy tạo service qua dashboard nằm ngoài GitHub approval gate; gate dưới đây
+áp dụng cho những lần release sau bootstrap. Không tự tạo service để né phê duyệt.
 
 ## Runtime và readiness
 
@@ -116,6 +131,12 @@ deploy trùng. Khi fail sau POST, artifact vẫn lưu deploy ID/previous image n
 Workflow release và rollback dùng chung concurrency group, không cancel run
 đang deploy. Main CI không auto-cancel; PR CI vẫn cancel run cũ. GitHub concurrency
 không đảm bảo FIFO và có thể thay pending run bằng run mới hơn.
+
+Run đang chờ production approval vẫn giữ concurrency group. Muốn diễn tập
+rollback staging trước production, lưu staging evidence rồi reject/cancel run
+đang chờ approval để nhả group trước khi dispatch rollback. Không để rollback
+đứng chờ chính release đó, và không cancel giữa lúc Render đang deploy để giả
+định remote deploy cũng dừng.
 
 Preflight từ chối main commit cũ. Sau khi chờ approval, production kiểm tra lại
 main và reviewers; nếu main đã đổi, dừng release đó để bản mới được kiểm thử.
