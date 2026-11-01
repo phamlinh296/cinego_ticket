@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -104,6 +103,11 @@ public class BookingServiceImplTest {
         assertEquals("John Doe", result.getFullname());
         assertTrue(result.getSeats().contains("A1"));
         assertTrue(result.getSeats().contains("A2"));
+        assertEquals(ESeatStatus.PENDING, seat1.getStatus());
+        assertEquals(ESeatStatus.PENDING, seat2.getStatus());
+        verify(showSeatRepo).save(seat1);
+        verify(showSeatRepo).save(seat2);
+        verify(bookingRepo).save(any(Booking.class));
     }
 
     @Test
@@ -160,4 +164,67 @@ public class BookingServiceImplTest {
         assertEquals("Sorry, seats of this show are full. Please choose another show", ex.getMessage());
     }
 
-} 
+    @Test
+    void createBooking_moreThanFourSeats_rejectsBeforeAccessingDatabase() {
+        BookingRequest request = new BookingRequest();
+        request.setShowId("show123");
+        request.setSeatsId(List.of("A1", "A2", "A3", "A4", "A5"));
+
+        RuntimeException failure = assertThrows(RuntimeException.class,
+                () -> bookingService.createBooking("john", request));
+
+        assertEquals("You can not reverse more than 4 seats at the time.", failure.getMessage());
+        verifyNoInteractions(userRepo, showRepo, showSeatRepo, bookingRepo);
+    }
+
+    @Test
+    void createBooking_unknownUser_doesNotReserveSeats() {
+        BookingRequest request = new BookingRequest();
+        request.setShowId("show123");
+        request.setSeatsId(List.of("A1"));
+        when(userRepo.findByUsername("missing")).thenReturn(Optional.empty());
+
+        RuntimeException failure = assertThrows(RuntimeException.class,
+                () -> bookingService.createBooking("missing", request));
+
+        assertEquals("User is not found", failure.getMessage());
+        verifyNoInteractions(showRepo, showSeatRepo, bookingRepo);
+    }
+
+    @Test
+    void createBooking_unknownShow_doesNotReserveSeats() {
+        User activeUser = new User();
+        activeUser.setStatus(UserStatus.ACTIVE);
+        when(userRepo.findByUsername("john")).thenReturn(Optional.of(activeUser));
+        when(showRepo.findById("missing")).thenReturn(Optional.empty());
+        BookingRequest request = new BookingRequest();
+        request.setShowId("missing");
+        request.setSeatsId(List.of("A1"));
+
+        RuntimeException failure = assertThrows(RuntimeException.class,
+                () -> bookingService.createBooking("john", request));
+
+        assertEquals("Show is not found", failure.getMessage());
+        verifyNoInteractions(showSeatRepo, bookingRepo);
+    }
+
+    @Test
+    void createBooking_duplicateSeatIds_reservesAndChargesSeatOnlyOnce() {
+        commonSetup();
+        seat1.getCinemaSeat().setPrice(10000);
+        BookingRequest request = new BookingRequest();
+        request.setShowId("show123");
+        request.setSeatsId(List.of("A1", "A1"));
+        when(showSeatRepo.countByShowIdAndStatus("show123", ESeatStatus.AVAILABLE)).thenReturn(10);
+        when(showSeatRepo.findByIdAndShowId("A1", "show123")).thenReturn(Optional.of(seat1));
+        when(showSeatRepo.save(seat1)).thenReturn(seat1);
+        when(bookingRepo.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        BookingResponse response = bookingService.createBooking("john", request);
+
+        assertEquals(List.of("A1"), response.getSeats());
+        assertEquals(10000, response.getPrice());
+        verify(showSeatRepo).findByIdAndShowId("A1", "show123");
+        verify(showSeatRepo).save(seat1);
+    }
+}

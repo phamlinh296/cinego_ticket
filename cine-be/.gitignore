@@ -36,3 +36,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Runtime credentials stay outside version control; the blank example is safe.
+.env
+.env.*
+!.env.example

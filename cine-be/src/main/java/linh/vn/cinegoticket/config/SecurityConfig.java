@@ -3,6 +3,7 @@ package linh.vn.cinegoticket.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -35,6 +36,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Kích hoạt CORS
                 .authorizeHttpRequests(request ->
                         request
+                                .requestMatchers(HttpMethod.GET, "/actuator/health/liveness", "/actuator/health/readiness").permitAll()
                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 //                                .requestMatchers("/api/auth/**").permitAll()
                                 .anyRequest().authenticated())

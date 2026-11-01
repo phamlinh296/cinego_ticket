@@ -1,4 +1,21 @@
 # CINEGO TICKETING SYSTEM
+## AI workflow và CI/CD backend
+
+- [Trạng thái triển khai và evidence](docs/DELIVERY-STATUS.md)
+- [CI và kiểm thử backend](docs/CI-CD.md)
+- [AI workflow và hướng dẫn chia sẻ](docs/AI-WORKFLOWS.md)
+- [Cấu hình release, Render và rollback](docs/RELEASE-RUNBOOK.md)
+- [Tên biến runtime cần cấu hình](.env.example)
+- [Thiết lập OpenAI/GitHub/Render từ đầu](docs/SETUP-GUIDE.md)
+- [PR minh chứng #2](https://github.com/phamlinh296/cinego_ticket/pull/2):
+  [CI pass](https://github.com/phamlinh296/cinego_ticket/actions/runs/41340915843),
+  49 test pass và Docker build pass; AI trả phí/release chưa chạy.
+
+Các cờ AI/release mặc định chưa bật. Trước khi khởi động, cấu hình JWT_SECRET
+và các credential của bạn qua environment/IDE/Render; .env.example chỉ liệt kê tên,
+Spring Boot không tự nạp file .env. Chạy Maven/Docker production từ root repository
+để có module shared-model. Chưa có PR minh chứng AI hoặc deployment thật.
+
 
 ## 🚀 HƯỚNG DẪN CHI TIẾT CHẠY DỰ ÁN (CHO NGƯỜI MỚI)
 

@@ -1,0 +1,29 @@
+# Backend image context: allow only reactor metadata and required source.
+**
+!mvnw
+!pom.xml
+!.mvn/
+!.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.properties
+!shared-model/
+!shared-model/pom.xml
+!shared-model/src/
+!shared-model/src/main/
+!shared-model/src/main/**
+!cine-be/
+!cine-be/pom.xml
+!cine-be/Dockerfile.production
+!cine-be/src/
+!cine-be/src/main/
+!cine-be/src/main/**
+!spark-processor/
+!spark-processor/pom.xml
+
+# Exclude local secrets even if placed under a source directory.
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.log

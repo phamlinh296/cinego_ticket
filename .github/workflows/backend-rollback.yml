@@ -1,0 +1,93 @@
+name: Backend rollback
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [staging, production]
+        required: true
+      image_ref:
+        description: Previously verified image digest from release evidence
+        type: string
+        required: true
+      expected_current_image:
+        description: Currently live image digest, checked again before rollback
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: cinego-release
+  cancel-in-progress: false
+jobs:
+  guard:
+    if: github.ref == 'refs/heads/main' && vars.CINEGO_RELEASE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      environment: ${{ steps.guard.outputs.environment }}
+      service: ${{ steps.guard.outputs.service }}
+      image: ${{ steps.guard.outputs.image }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - id: guard
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+          IMAGE_REF: ${{ inputs.image_ref }}
+          EXPECTED_CURRENT: ${{ inputs.expected_current_image }}
+          STAGING_SERVICE: ${{ vars.RENDER_STAGING_SERVICE_ID }}
+          PRODUCTION_SERVICE: ${{ vars.RENDER_PRODUCTION_SERVICE_ID }}
+        with:
+          script: |
+            const guards = require('./cine-be/automation/release-guards.cjs');
+            const target = process.env.TARGET_ENVIRONMENT;
+            if (!['staging', 'production'].includes(target)) throw new Error('Invalid environment');
+            const image = 'ghcr.io/' + context.repo.owner.toLowerCase() + '/cinego-be';
+            for (const ref of [process.env.IMAGE_REF, process.env.EXPECTED_CURRENT]) {
+              if (!ref.startsWith(image + '@sha256:') || !/^[a-f0-9]{64}$/.test(ref.split('@sha256:')[1] || '')) {
+                throw new Error('Rollback requires an immutable digest from this backend repository');
+              }
+            }
+            const environment = await github.rest.repos.getEnvironment({...context.repo, environment_name: target});
+            if (target === 'production') guards.validateEnvironment(environment.data);
+            if (process.env.STAGING_SERVICE === process.env.PRODUCTION_SERVICE) throw new Error('Services must differ');
+            core.setOutput('environment', target);
+            core.setOutput('service', target === 'production' ? process.env.PRODUCTION_SERVICE : process.env.STAGING_SERVICE);
+            core.setOutput('image', image);
+  rollback:
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: ${{ needs.guard.outputs.environment }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Recheck production reviewers after the approval gate
+        if: needs.guard.outputs.environment == 'production'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        with:
+          script: |
+            const environment = await github.rest.repos.getEnvironment({...context.repo, environment_name: 'production'});
+            require('./cine-be/automation/release-guards.cjs').validateEnvironment(environment.data);
+      - name: Roll back only if the live digest is still the expected one
+        env:
+          IMAGE_REF: ${{ inputs.image_ref }}
+          EXPECTED_CURRENT_IMAGE: ${{ inputs.expected_current_image }}
+          EXPECTED_IMAGE_REPOSITORY: ${{ needs.guard.outputs.image }}
+          RENDER_SERVICE_ID: ${{ needs.guard.outputs.service }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+        run: python3 cine-be/automation/render_deploy.py --execute --rollback --result-file rollback-result.json
+      - name: Preserve rollback evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rollback-${{ github.run_id }}-${{ github.run_attempt }}
+          path: rollback-result.json
+          if-no-files-found: warn
+          retention-days: 90

@@ -1,0 +1,20 @@
+name: AI PR Review
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: write
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  review:
+    uses: ./.github/workflows/reusable-ai-review.yml
+    with:
+      enabled: ${{ vars.CINEGO_AI_REVIEW_ENABLED == 'true' }}
+      model: ${{ vars.CINEGO_AI_MODEL }}
+      review_paths: cine-be/,shared-model/
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

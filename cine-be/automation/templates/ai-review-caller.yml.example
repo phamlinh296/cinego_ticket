@@ -1,0 +1,22 @@
+# Inactive example. Copy after the shared toolkit exists in the trusted base.
+# Replace REPLACE_WITH_REVIEWED_COMMIT_SHA with a real, reviewed full commit SHA.
+name: Advisory AI review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: write
+concurrency:
+  group: advisory-ai-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  review:
+    uses: phamlinh296/cinego_ticket/.github/workflows/reusable-ai-review.yml@REPLACE_WITH_REVIEWED_COMMIT_SHA
+    with:
+      enabled: ${{ vars.AI_REVIEW_ENABLED == 'true' }}
+      model: ${{ vars.AI_REVIEW_MODEL }}
+      review_paths: src/,shared/
+      toolkit_directory: automation
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

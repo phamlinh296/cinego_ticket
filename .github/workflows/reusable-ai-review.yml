@@ -1,0 +1,135 @@
+name: Reusable advisory AI review
+on:
+  workflow_call:
+    inputs:
+      enabled:
+        type: boolean
+        default: false
+      model:
+        type: string
+        default: ''
+      review_paths:
+        type: string
+        default: cine-be/,shared-model/
+      toolkit_directory:
+        type: string
+        default: cine-be/automation
+    secrets:
+      OPENAI_API_KEY:
+        required: false
+permissions:
+  contents: read
+jobs:
+  eligibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      eligible: ${{ steps.check.outputs.eligible }}
+    steps:
+      - name: Explain whether paid AI review is enabled
+        id: check
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          ENABLED: ${{ inputs.enabled }}
+          MODEL: ${{ inputs.model }}
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const trusted = pr && pr.head.repo.full_name === context.repo.owner + '/' + context.repo.repo &&
+              ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(pr.author_association) && !pr.draft;
+            const eligible = process.env.ENABLED === 'true' && !!process.env.MODEL && !!trusted;
+            core.setOutput('eligible', String(eligible));
+            await core.summary.addRaw(eligible
+              ? 'AI review được bật; bước tiếp theo còn kiểm tra API key. Chi phí API thuộc project của chủ repo.'
+              : 'AI review chưa chạy: cần opt-in, model, PR nội bộ từ người tin cậy và PR không ở trạng thái draft.').write();
+  codex:
+    needs: eligibility
+    if: needs.eligibility.outputs.eligible == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      result: ${{ steps.codex.outputs.final-message }}
+      head_sha: ${{ steps.prepare.outputs.head_sha }}
+      coverage: ${{ steps.prepare.outputs.coverage }}
+    steps:
+      - name: Check key availability without printing it
+        id: key
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          HAS_KEY: ${{ secrets.OPENAI_API_KEY != '' }}
+        with:
+          script: |
+            core.setOutput('present', process.env.HAS_KEY);
+            if (process.env.HAS_KEY !== 'true') {
+              await core.summary.addRaw('BLOCKER: chưa cấu hình OPENAI_API_KEY. Không gọi AI API.').write();
+            }
+      - name: Checkout trusted base only
+        if: steps.key.outputs.present == 'true'
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: trusted
+          persist-credentials: false
+      - name: Prepare bounded, redacted PR diff as data
+        id: prepare
+        if: steps.key.outputs.present == 'true'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          TOOLKIT: ${{ inputs.toolkit_directory }}
+          REVIEW_PATHS: ${{ inputs.review_paths }}
+        with:
+          script: |
+            const path = require('node:path');
+            const root = path.resolve(process.env.GITHUB_WORKSPACE, 'trusted');
+            const toolkit = path.resolve(root, process.env.TOOLKIT);
+            if (!toolkit.startsWith(root + path.sep)) throw new Error('Invalid toolkit directory');
+            await require(path.join(toolkit, 'ai-review.cjs')).prepare({github, context, core});
+      # Codex is the LAST step. No subsequent project code runs in this key-bearing job.
+      - name: Review diff with Codex (advisory, paid only after opt-in)
+        id: codex
+        if: steps.prepare.outputs.has_diff == 'true'
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1, verified action schema
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          codex-version: '0.166.0'
+          codex-args: '["--skip-git-repo-check"]'
+          model: ${{ inputs.model }}
+          effort: low
+          sandbox: read-only
+          safety-strategy: drop-sudo
+          working-directory: ${{ steps.prepare.outputs.review_directory }}
+          codex-home: ${{ runner.temp }}/cinego-codex-home
+          prompt-file: ${{ github.workspace }}/trusted/${{ inputs.toolkit_directory }}/prompts/pr-review.md
+          output-schema-file: ${{ github.workspace }}/trusted/${{ inputs.toolkit_directory }}/prompts/review-schema.json
+  post-feedback:
+    needs: codex
+    if: needs.codex.result == 'success' && needs.codex.outputs.result != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout trusted formatter only
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - name: Validate and update one advisory comment
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          TOOLKIT: ${{ inputs.toolkit_directory }}
+          REVIEW_PATHS: ${{ inputs.review_paths }}
+          REVIEW_RESULT: ${{ needs.codex.outputs.result }}
+          REVIEW_HEAD_SHA: ${{ needs.codex.outputs.head_sha }}
+          REVIEW_COVERAGE: ${{ needs.codex.outputs.coverage }}
+        with:
+          script: |
+            const path = require('node:path');
+            const root = process.env.GITHUB_WORKSPACE;
+            const toolkit = path.resolve(root, process.env.TOOLKIT);
+            if (!toolkit.startsWith(root + path.sep)) throw new Error('Invalid toolkit directory');
+            await require(path.join(toolkit, 'ai-review.cjs')).post({github, context, core});

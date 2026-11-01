@@ -45,7 +45,7 @@
 //    @BeforeEach
 //    void setUp() {
 //        // Inject SIGNER_KEY thủ công vì không có @Value khi chạy unit test
-//        ReflectionTestUtils.setField(authenticationService, "SIGNER_KEY", "sEzN49A5eMzybTam7Km8m5KHpF36Vp+YnVZ/B5VaVsUrHvgDBvnIEy/MznZGVl+5");
+//        ReflectionTestUtils.setField(authenticationService, "SIGNER_KEY", "test-only-signing-key-never-use-in-production");
 //    }
 //
 //    //Thành công:
