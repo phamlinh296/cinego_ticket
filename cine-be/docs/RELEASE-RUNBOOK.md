@@ -147,9 +147,9 @@ Diễn tập bằng unittest HTTP giả lập chưa thay thế diễn tập stag
 
 | Bằng chứng | Trạng thái hiện tại |
 |---|---|
-| Backend tests + MySQL + health/security tests | Đã chạy local, xem DELIVERY-STATUS.md |
-| Helper AI/release/rollback tests và YAML lint | Đã chạy local |
-| PR thật nhận AI review | Chưa chạy; cần publish source, opt-in, model/key và duyệt chi phí |
+| Backend tests + MySQL + health/security tests | Local và GitHub PR #2 pass, xem DELIVERY-STATUS.md |
+| Helper AI/release/rollback tests và YAML lint | Tests local/GitHub pass; YAML lint local pass |
+| PR thật nhận AI review | Source đã ở draft PR #2; cần bootstrap trusted main, opt-in, model/key và duyệt chi phí |
 | GHCR release digest | Chưa publish |
 | Render staging/prod/rollback exercise | Chưa chạy; cần account services/config/approval |
 | Áp dụng nhóm/bộ phận/công ty | Chưa có bằng chứng adoption |

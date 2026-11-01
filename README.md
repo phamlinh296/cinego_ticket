@@ -11,7 +11,8 @@ Hệ thống đặt vé xem phim trực tuyến theo kiến trúc **event-driven
 Đã chuẩn bị source AI review PR, CI test/MySQL, GHCR → Render staging → production approval và rollback.
 Các cờ AI/release mặc định tắt; chưa có bằng chứng AI/deploy thật hoặc adoption toàn công ty.
 
-- [Trạng thái và evidence local](cine-be/docs/DELIVERY-STATUS.md)
+- [Trạng thái và evidence local/GitHub](cine-be/docs/DELIVERY-STATUS.md)
+- [PR minh chứng #2](https://github.com/phamlinh296/cinego_ticket/pull/2): [CI pass](https://github.com/phamlinh296/cinego_ticket/actions/runs/41340915843), 49 test pass và Docker build pass.
 - [AI workflow và hướng dẫn chia sẻ](cine-be/docs/AI-WORKFLOWS.md)
 - [Runbook cấu hình, release và rollback](cine-be/docs/RELEASE-RUNBOOK.md)
 
@@ -216,8 +217,8 @@ curl http://localhost:9595/api/payment/test-kafka
 
 ## 8. CI/CD
 
-- **GitHub Actions:** Chạy test tự động khi push lên `main`
-- **Render:** Auto-deploy backend sau khi CI pass
+- **GitHub Actions:** Chạy automation tests, Maven/MySQL tests và Docker build khi PR vào hoặc push lên `main`.
+- **Release:** Khi được bật và CI main pass, publish GHCR digest rồi deploy staging; production cần reviewer duyệt và dùng cùng digest. Cấu hình Render auto-deploy ngoài repo cần kiểm tra riêng trước bootstrap.
 
 ---
 

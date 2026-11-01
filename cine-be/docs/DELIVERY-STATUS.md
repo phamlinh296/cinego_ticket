@@ -1,15 +1,31 @@
 # Trạng thái bàn giao CineGo AI-assisted CI/CD
 
-Ngày kiểm chứng local: **02/11/2026 (Asia/Saigon)**. Branch:
+Ngày kiểm chứng local và GitHub: **02/11/2026 (Asia/Saigon)**. Branch:
 `feat/ai-cicd-pipeline`. Chủ repo đã cho phép commit/push và tạo draft PR sau
-kiểm chứng local; chưa cho phép merge, gọi AI trả phí hoặc deploy. Trạng thái
-PR/CI online cụ thể được ghi trong báo cáo bàn giao cuối phiên và trên GitHub.
+kiểm chứng local; chưa cho phép merge, gọi AI trả phí hoặc deploy.
+
+## Minh chứng GitHub
+
+- [Draft PR #2](https://github.com/phamlinh296/cinego_ticket/pull/2), commit
+  `da636cce0e59b7c6997e85adc9b4a01036eb9fa4`: 40 file triển khai, chưa merge.
+- [CI run 41340915843](https://github.com/phamlinh296/cinego_ticket/actions/runs/41340915843):
+  **success**, job `build` và `docker-build-check` đều pass. Log xác nhận 16 Java
+  unit/MVC/health + 4 MySQL integration + 13 Node + 16 Python = **49 test pass**;
+  fail/error/skip đều 0. Job release được skip vì đây là PR.
+- [Test reports artifact](https://github.com/phamlinh296/cinego_ticket/actions/runs/41340915843/artifacts/13097242776),
+  giữ 7 ngày; hết hạn artifact không làm thay đổi kết quả của run đã ghi nhận.
+- [AI workflow run 41340915864](https://github.com/phamlinh296/cinego_ticket/actions/runs/41340915864):
+  eligibility pass; `codex`/`post-feedback` skip với `enabled=false`, model rỗng
+  và PR draft. Đây là bằng chứng guard hoạt động, **chưa phải AI review thật**.
+
+Các link trên chứng minh commit triển khai cụ thể. Commit tài liệu sau đó có run
+riêng trong PR; không dùng kết quả run cũ để khẳng định mọi commit mới đã pass.
 
 ## Đã triển khai trong source
 
 | Phần | File/chức năng | Evidence |
 |---|---|---|
-| CI backend | Root `ci.yml`: automation tests, Maven reactor, MySQL, reports, Docker check | Test/build/lint local pass |
+| CI backend | Root `ci.yml`: automation tests, Maven reactor, MySQL, reports, Docker check | Test/build local và GitHub pass; lint local pass |
 | Sửa booking đã duyệt | `createBooking()` có transaction bao trùm | Hai lỗi từng tái hiện trên MySQL đã được regression test |
 | AI review | `ai-pr-review.yml` + `reusable-ai-review.yml`, prompt/schema và helpers | Test filtering/redaction/validation/stale comment pass; chưa gọi model |
 | Artifact/release | `backend-release.yml`, GHCR digest, staging → reviewer gate → production cùng digest | YAML lint và guard tests pass; chưa publish |
@@ -37,6 +53,8 @@ PR/CI online cụ thể được ghi trong báo cáo bàn giao cuối phiên và
   fixture; không đổi kỳ vọng 503 hoặc bỏ test. Lần chạy cuối mọi test pass.
 - Authentication/context test cũ vẫn bị comment; không được tính là pass/skip.
 - Compile còn warning đã có về Lombok/MapStruct/deprecated/unchecked operations.
+- Runner GitHub còn cảnh báo các action pin Node 20 đang được chạy bằng Node 24;
+  không làm fail run trên. Cần review/cập nhật action SHA theo đợt bảo trì.
 
 Các lệnh kiểm chứng đã chạy từ root (Windows dùng `python` thay `python3`):
 
@@ -78,14 +96,35 @@ trong `.idea`/Spark JAR. Không merge/deploy hay gọi API tính phí.
 
 ## Chưa thể gọi là hoàn thành end-to-end
 
-1. Commit/push/draft PR đã được duyệt; cần kiểm tra run GitHub thực tế sau khi
-   publish. Không suy ra CI online pass chỉ từ kết quả local trong bảng trên.
+1. Commit/push/draft PR và CI GitHub thật đã hoàn tất như evidence ở trên.
+   PR còn draft; bootstrap toolkit lên trusted `main` cần duyệt merge riêng và
+   kiểm tra Render auto-deploy ngoài repo trước khi merge.
 2. Cần chủ repo cấu hình model/key, budget và opt-in có phê duyệt để chạy AI thật.
 3. Cần GHCR pull access, hai Render services và runtime dependencies/config;
    GitHub Environments/reviewers/branch rules phải được chủ repo cấu hình.
 4. Cần staging smoke nghiệp vụ, production approval và diễn tập rollback thật.
 5. Cần các repo/nhóm thực sự dùng thử và ghi feedback trước khi tuyên bố mở rộng
    đến bộ phận hoặc công ty.
+
+## Cấu hình GitHub đã kiểm tra thực tế
+
+Kiểm tra chỉ đọc ngày 02/11/2026 qua API GitHub bằng tài khoản Git đang đăng nhập.
+Collection variables/secrets/environments đều trả HTTP 200; variables và
+environments có `total_count=0`. GET các tên yêu cầu dưới đây trả 404. Không đọc
+giá trị secret, không ghi settings và không gọi OpenAI/Render API.
+
+| Mục | Kết quả tại thời điểm kiểm tra | Thao tác còn cần |
+|---|---|---|
+| `OPENAI_API_KEY` | Chưa có repository secret này | Chủ repo tạo trong [Actions secrets](https://github.com/phamlinh296/cinego_ticket/settings/secrets/actions); không gửi key qua chat |
+| `CINEGO_AI_MODEL`, `CINEGO_AI_REVIEW_ENABLED` | Chưa có; AI không chạy | Chọn model/budget và duyệt chi phí trước khi bật trong [Actions variables](https://github.com/phamlinh296/cinego_ticket/settings/variables/actions) |
+| `CINEGO_RELEASE_ENABLED` | Chưa có; release không chạy | Giữ tắt trong bootstrap, chỉ bật sau cấu hình và duyệt phát hành |
+| `RENDER_STAGING_SERVICE_ID`, `RENDER_PRODUCTION_SERVICE_ID` | Chưa có | Cần hai image-backed services riêng và xác minh auto-deploy tắt |
+| Environments `staging`, `production` | Chưa tồn tại | Tạo trong [Environments](https://github.com/phamlinh296/cinego_ticket/settings/environments), thêm `RENDER_API_KEY`/`HEALTH_URL`, production required reviewers |
+| Branch `main` | API trả `protected=false` | Review/cấu hình required checks và review rule trước phát hành |
+
+Không thể tạo key OpenAI, chọn budget, xác định Render service hoặc reviewer thay
+chủ tài khoản từ source code. [AI-WORKFLOWS.md](AI-WORKFLOWS.md) và
+[RELEASE-RUNBOOK.md](RELEASE-RUNBOOK.md) ghi thứ tự bootstrap và tên cấu hình.
 
 Readiness hiện chưa bao phủ đầy đủ Kafka/HBase/payment. Phân quyền nghiệp vụ,
 SAST/dependency scanning, provenance kiểm chứng, migration/backup, alerting và

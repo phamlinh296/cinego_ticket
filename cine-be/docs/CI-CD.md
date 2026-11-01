@@ -1,8 +1,9 @@
 # CineGo backend CI — Giai đoạn B
 
-Tài liệu mô tả CI và evidence local của Giai đoạn B. Trạng thái CI GitHub được
-kiểm tra riêng sau khi chủ repo cho phép publish draft PR.
-AI review, GHCR, staging và production chưa được bật ở giai đoạn này.
+Tài liệu mô tả CI và evidence local của Giai đoạn B. CI đã được kiểm chứng trên
+[draft PR #2](https://github.com/phamlinh296/cinego_ticket/pull/2):
+[run 41340915843 thành công](https://github.com/phamlinh296/cinego_ticket/actions/runs/41340915843),
+49 test pass và Docker build pass. AI trả phí, GHCR, staging và production chưa bật.
 
 Source cho các giai đoạn tiếp theo hiện có tại
 [AI-WORKFLOWS.md](AI-WORKFLOWS.md) và [RELEASE-RUNBOOK.md](RELEASE-RUNBOOK.md).
@@ -81,21 +82,26 @@ Job `build`:
 
 1. Checkout với `persist-credentials: false`.
 2. JDK 21 và Maven cache.
-3. Kiểm tra Docker daemon.
-4. `./mvnw -B -ntp -pl cine-be -am verify` từ root reactor.
-5. Upload Surefire/Failsafe reports kể cả khi test fail, giữ 7 ngày.
+3. Chạy Node/Python tests cho helpers AI/release/rollback, không gọi API ngoài.
+4. Kiểm tra Docker daemon.
+5. `./mvnw -B -ntp -pl cine-be -am verify` từ root reactor.
+6. Upload Surefire/Failsafe reports kể cả khi test fail, giữ 7 ngày.
 
 Job `docker-build-check` chỉ chạy sau `build` thành công và build image với
-`push: false`. Workflow chỉ có `contents: read`; mọi action được pin commit SHA.
-Không có khóa AI, registry credential hoặc deploy secret trong workflow này.
-Workflow mới không tạo song song một CI khác.
+`push: false`. Hai job kiểm chứng dùng `contents: read`; mọi action được pin SHA.
+Job reusable `release` chỉ được gọi sau hai job pass trên push `main` khi
+`CINEGO_RELEASE_ENABLED=true`; job publish riêng có `packages: write`, deploy
+dùng environment secrets. PR không được gọi release. AI nằm trong workflow riêng.
+Không tạo song song một CI khác.
 
 **Render deploy hook cũ đã được bỏ khỏi file CI trong workspace.** Khi các thay
-đổi được merge sau này, push `main` chỉ chạy CI này. Render auto-deploy được cấu
-hình ngoài repository vẫn cần chủ dịch vụ kiểm tra; chưa thay đổi setting đó.
+đổi được merge sau này, push `main` chạy CI và chỉ gọi release khi opt-in bật.
+Render auto-deploy cấu hình ngoài repository vẫn cần chủ dịch vụ kiểm tra;
+chưa thay đổi setting đó.
 
 Branch protection/required checks và GitHub Environments chưa được cấu hình.
-Run/PR cụ thể cần đối chiếu GitHub và báo cáo bàn giao; không suy ra từ test local.
+Run/PR và snapshot cấu hình GitHub cụ thể đã ghi trong
+[DELIVERY-STATUS.md](DELIVERY-STATUS.md); không suy ra từ test local.
 
 ## Docker build
 
@@ -112,8 +118,8 @@ Wrapper được chuẩn hóa CRLF trong image trước khi chạy.
 
 Docker build bỏ qua test vì CI đã kiểm thử trên host trước đó. Build image riêng
 lẻ không chứng minh test pass và không chứng minh ứng dụng runtime đã ready.
-Image chưa được publish hay deploy. Các credential fallback hiện có trong main
-application config vẫn cần được xử lý/rotate trước giai đoạn phát hành.
+Image chưa được publish hay deploy. Credential fallback đã được bỏ trong PR;
+credential từng dùng thật vẫn cần chủ tài khoản rotate/revoke trước phát hành.
 Base images được pin digest; cần cập nhật có kiểm tra để nhận security patches.
 BuildKit cache Maven dependencies trong build stage, không đưa cache vào runtime image.
 

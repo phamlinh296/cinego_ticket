@@ -6,6 +6,9 @@
 - [AI workflow và hướng dẫn chia sẻ](docs/AI-WORKFLOWS.md)
 - [Cấu hình release, Render và rollback](docs/RELEASE-RUNBOOK.md)
 - [Tên biến runtime cần cấu hình](.env.example)
+- [PR minh chứng #2](https://github.com/phamlinh296/cinego_ticket/pull/2):
+  [CI pass](https://github.com/phamlinh296/cinego_ticket/actions/runs/41340915843),
+  49 test pass và Docker build pass; AI trả phí/release chưa chạy.
 
 Các cờ AI/release mặc định chưa bật. Trước khi khởi động, cấu hình JWT_SECRET
 và các credential của bạn qua environment/IDE/Render; .env.example chỉ liệt kê tên,

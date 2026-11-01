@@ -1,8 +1,11 @@
 # AI workflow dùng cho CineGo và chia sẻ trong nhóm
 
-Trạng thái: đã triển khai source và kiểm thử các guardrail tại local. Chưa có
-AI review trên PR thật, chưa đo chất lượng model, chưa có bằng chứng áp dụng
-trong nhóm/bộ phận/công ty. Đây là bộ workflow production-inspired để pilot.
+Trạng thái: đã triển khai source; CI và guardrail tests đã pass tại local và
+[PR #2](https://github.com/phamlinh296/cinego_ticket/pull/2). AI job skip đúng
+opt-in/draft guard, chưa có AI review thật hoặc số liệu chất lượng model.
+Chưa có bằng chứng áp dụng trong nhóm/bộ phận/công ty. Đây là bộ workflow
+production-inspired để pilot; [DELIVERY-STATUS.md](DELIVERY-STATUS.md) ghi run và
+cấu hình tài khoản còn thiếu đã kiểm tra thực tế.
 
 ## Workflow có sẵn
 
